@@ -45,6 +45,12 @@ if test -f $HOME/.Xdefaults; then
    mv $HOME/.Xdefaults $HOME/.Xdefaults.$$
 fi 
 cp Xdefaults $HOME/.Xdefaults
+
+if test -f $HOME/.conkyrc; then
+   echo "$this: $HOME/.conkyrc exits, renaming to $HOME/.conkyrc.$$"
+   mv $HOME/.conkyrc $HOME/.conkyrc.$$
+fi 
+cp conkyrc $HOME/.conkyrc
    
 echo $this: installing custom vim stuff
 cd $WD/../vim
