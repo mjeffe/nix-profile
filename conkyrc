@@ -10,7 +10,7 @@ background yes
 
 # Create own window instead of using desktop (required in nautilus)
 own_window yes
-#own_window_type override    # does not work with Ubuntu 14.04
+#own_window_type override   # does not work on ubuntu 14.04
 own_window_type normal
 #own_window_transparent yes
 own_window_argb_visual yes
@@ -168,13 +168,13 @@ ${alignc}${color2}eth0 (Hardwire) (${addr eth0})${color}
 Down: $color${downspeed eth0}/s ${alignr}Up: ${upspeed eth0}/s
 ${downspeedgraph eth0 25,140 000000 00ff00} ${alignr}${upspeedgraph eth0 25,140 000000 ff0000}$color
 Total: ${totaldown eth0} ${alignr}Total: ${totalup eth0}
-${endif}${endif}  # Wireless
-${if_up eth1}
-${alignc}${color2}eth1 [${addr eth1}] (WiFi)${color} 
+${endif}${endif}
+${if_up wlan0}  # Wireless
+${alignc}${color2}wlan0 [${addr wlan0}] (WiFi)${color} 
 #${alignr}${wireless_essid eth1} | ${wireless_link_qual_perc eth1}% ${color}
-Down: ${downspeed eth1}/s ${alignr}Up: ${upspeed eth1}/s
-${downspeedgraph eth1 25,140 000000 00ff00} ${alignr}${upspeedgraph eth1 25,140 000000 ff0000}
-Total: ${totaldown eth1} ${alignr}Total: ${totalup eth1}${endif}
+Down: ${downspeed wlan0}/s ${alignr}Up: ${upspeed wlan0}/s
+${downspeedgraph wlan0 25,140 000000 00ff00} ${alignr}${upspeedgraph wlan0 25,140 000000 ff0000}
+Total: ${totaldown wlan0} ${alignr}Total: ${totalup wlan0}${endif}
 Inbound: ${tcp_portmon 1 32767 count} Outbound: ${tcp_portmon 32768 61000 count} ${alignr}Total: ${tcp_portmon 1 65535 count}
 #
 # This formatting of these options is ugly, but I don't want any extra blank
