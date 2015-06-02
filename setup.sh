@@ -3,14 +3,14 @@
 # $Id$
 #
 
-SUPPORT=../contrib/support
+JAMESTOOLS=/home/mjeffe/src/acx/sawmill/jamestools
 
 
 WD=`pwd`
 this=`basename $0`
 
 # check to make sure jamestools has been checked out before trying to run
-if test ! -d $SUPPORT; then
+if test ! -d $JAMESTOOLS; then
    echo "$this: It looks like jamestools has not been checked out..."
    echo "use this command to check it out before running this again:"
    echo
@@ -61,8 +61,7 @@ cd $WD/../utils
 make install_all
 
 
-cd $SUPPORT/jamestools
-./install_essentials_locally.sh
+(cd $JAMESTOOLS && ./install_essentials_locally.sh)
 
 exit
 # everything from here down has been incorporated into the utils Makefile
