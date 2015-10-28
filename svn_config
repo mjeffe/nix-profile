@@ -167,7 +167,7 @@ README* = svn:eol-style=native;svn:keywords=Author Date Id Rev URL Header
 # scripts
 *.sh  = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Rev URL Header
 *.pl  = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Rev URL Header
-*.pm  = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Rev URL Header
+*.pm  = svn:eol-style=native;svn:keywords=Author Date Id Rev URL Header
 *.cgi = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Rev URL Header
 *.py  = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Rev URL Header
 
