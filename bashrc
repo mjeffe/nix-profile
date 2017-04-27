@@ -21,6 +21,7 @@ alias more=`which less`
 alias vi=`which vim`
 alias view="`which vim` -R"
 #alias prhex="prhex -l -w"
+alias gitsdiff="git difftool -y -x 'sdiff -w `tput cols`'"
 
 # the LANG environment variable can mess up stuff in more, man pages, etc.
 unset LANG
