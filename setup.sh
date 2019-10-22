@@ -46,11 +46,11 @@ if test -f $HOME/.Xdefaults; then
 fi 
 cp Xdefaults $HOME/.Xdefaults
 
-if test -f $HOME/.conkyrc; then
-   echo "$this: $HOME/.conkyrc exits, renaming to $HOME/.conkyrc.$$"
-   mv $HOME/.conkyrc $HOME/.conkyrc.$$
+if test -f $HOME/.config/conky/conky.conf; then
+   echo "$this: $HOME/.config/conky/conky.conf exits, renaming to $HOME/.config/conky/conky.conf.$$"
+   mv $HOME/.config/conky/conky.conf $HOME/.config/conky/conky.conf.$$
 fi 
-cp conkyrc $HOME/.conkyrc
+cp conkyrc $HOME/.config/conky/conky.conf
    
 echo $this: installing custom vim stuff
 cd $WD/../vim
