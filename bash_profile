@@ -1,11 +1,6 @@
-# .bash_profile
-# $Id$
-
+# mjeffe .bash_profile
+#
 # User specific environment and startup programs
-
-
-# can't remember why we do this...
-#unset USERNAME
 
 #export ORACLE_SID=CCTST
 #ORAENV_ASK=NO . oraenv
@@ -14,11 +9,10 @@ export PATH=.:$HOME/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
 
 export EDITOR=vim
+export VISUAL=vim
 
-#export CVS_SERVER=/usr/local/bin/cvs
 export CVS_RSH=ssh
 export CVSEDITOR=vim
-export VISUAL=vim
 
 export PS1='[\u@\h[$ORACLE_SID]:\w]$ '
 

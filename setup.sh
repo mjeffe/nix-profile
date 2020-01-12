@@ -3,27 +3,13 @@
 # $Id$
 #
 
-JAMESTOOLS=/home/mjeffe/src/acx/sawmill/jamestools
-
-
 WD=`pwd`
 this=`basename $0`
+JAMESTOOLS=/home/mjeffe/src/acx/sawmill/jamestools
 
-# check to make sure jamestools has been checked out before trying to run
-if test ! -d $JAMESTOOLS; then
-   echo "$this: It looks like jamestools has not been checked out..."
-   echo "use this command to check it out before running this again:"
-   echo
-   #echo "cd ~/src; cvs -d acxcvs.corp.acxiom.net:/cvsroot/sawmill co jamestools"
-   echo "cd ~/src; svn checkout https://acxsvn.corp.acxiom.net/svn/sawmill/trunk/jamestools jamestools"
-   echo
-   exit 1
-fi
-
-if test $MAKE_MACHINE"x" = "x"; then
-   echo "MAKE_MACHINE is not set."
-   exit 1
-fi
+# ------------
+# base profile stuff
+# ------------
 
 # install profile 
 echo $this: installing profile files
@@ -56,30 +42,30 @@ echo $this: installing custom vim stuff
 cd $WD/../vim
 make install
 
-echo $this: installing common utilities
-cd $WD/../utils
-make install_all
+# ------------
+# compile tools
+# ------------
 
+# check to make sure jamestools has been checked out before trying to run
+if test ! -d $JAMESTOOLS; then
+   echo "$this: It looks like jamestools has not been checked out..."
+   echo "use this command to check it out before running this again:"
+   echo
+   #echo "cd ~/src; cvs -d acxcvs.corp.acxiom.net:/cvsroot/sawmill co jamestools"
+   echo "cd ~/src; svn checkout https://acxsvn.corp.acxiom.net/svn/sawmill/trunk/jamestools jamestools"
+   echo
+   exit 1
+fi
+
+if test $MAKE_MACHINE"x" = "x"; then
+   echo "MAKE_MACHINE is not set."
+   exit 1
+fi
 
 (cd $JAMESTOOLS && ./install_essentials_locally.sh)
 
-exit
-# everything from here down has been incorporated into the utils Makefile
-
-echo $this: compiling and installing dtof
-cd $WD/../dtof
-make
-make install
-
-echo $this: compiling and installing rrobin
-cd $WD/../rrobin
-make
-make install
-
-echo $this: installing essential jamestools
-
-cd $WD/../../jamestools/ftod
-make
-cp ftod $HOME/bin
+echo $this: installing common utilities
+cd $WD/../utils
+make install_all
 
 
