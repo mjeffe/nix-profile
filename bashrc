@@ -32,4 +32,5 @@ alias vide='vim -u ~/.vimrc-ide'
 #alias prhex="prhex -l -w"
 alias gitsdiff="git difftool -y -x 'sdiff -w `tput cols`'"
 alias fucking='sudo'
+alias hulksmash='rm -fr'
 
