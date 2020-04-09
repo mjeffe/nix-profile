@@ -1,0 +1,20 @@
+" $Id: syncolor.vim 14 2011-03-09 19:25:46Z mjeffe $
+
+" my standard syntax highlighing scheme
+
+hi Comment      ctermfg=Brown
+hi Constant     NONE
+hi Identifier   NONE
+"hi Function     ctermfg=Cyan
+hi Statement    ctermfg=DarkCyan
+  hi Operator   ctermfg=NONE
+hi PreProc      ctermfg=Magenta
+hi Type         ctermfg=DarkGreen
+hi Special      NONE
+"hi Ignore       NONE
+"hi Error        NONE
+"hi Todo         NONE
+
+
+
+

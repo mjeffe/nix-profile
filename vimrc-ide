@@ -1,0 +1,4 @@
+" Run vim as an IDE 
+" Invoke using: vim -u ~/.vimrc-ide
+let g:vim_as_ide = 1
+source ~/.vimrc
