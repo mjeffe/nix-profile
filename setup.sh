@@ -36,6 +36,9 @@ if test -f $HOME/.config/conky/conky.conf; then
     mv $HOME/.config/conky/conky.conf $HOME/.config/conky/conky.conf.$$
 fi 
 cp conkyrc $HOME/.config/conky/conky.conf
+
+# install default crontab
+crontab crontab.default
     
 # ------------
 # vim stuff
