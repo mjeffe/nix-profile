@@ -25,6 +25,12 @@ fi
 cp bash_profile $HOME/.bash_profile 
 echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.bash_profile
     
+if test -f $HOME/.gitconfig; then
+    echo "$this: $HOME/.gitconfig exits, renaming to $HOME/.gitconfig.$$"
+    mv $HOME/.gitconfig $HOME/.gitconfig.$$
+fi
+cp ./gitconfig $HOME/.gitconfig
+
 if test -f $HOME/.Xdefaults; then
     echo $this: $HOME/.Xdefaults exits, renaming to $HOME/.Xdefaults.$$
     mv $HOME/.Xdefaults $HOME/.Xdefaults.$$
