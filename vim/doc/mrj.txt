@@ -15,7 +15,8 @@ CONTENTS                                                       *Mrj*
     2. IDE ........................... |MrjIDE|
     3. Vundle ........................ |MrjVundle|
     4. Git ........................... |MrjGit|
-    5. Vim Tricks .................... |MrjTricks|
+    5. Spell Checking ................ |MrjSpellChecking|
+    6. Vim Tricks .................... |MrjTricks|
 
 
 ====================================================================
@@ -159,6 +160,18 @@ unstaging:
         git reset <filepath>
 
 ====================================================================
+Section: Spell Checking                               *MrjSpellChecking*
+
+    :set spell
+    :setlocal spell
+    :set nospell
+    ]s  - move to next spelling error
+    [s  - move to previous spelling error
+    z=  - show spelling suggestions (select number)
+    zg  - add word to personal dictionary
+    zw  - flag dictionary word as bad
+
+====================================================================
 Section: Tricks                                       *MrjTricks*
 
     Add a colum of sequential numbers
@@ -170,3 +183,9 @@ Section: Tricks                                       *MrjTricks*
     Format JSON to pretty print
 
         :%!python -m json.tool
+
+    Sort selection
+        Select the section using Shift + V
+        Then invoke sort
+
+            :sort
