@@ -81,6 +81,10 @@ if exists("vim_as_ide") && vim_as_ide==1
     " enable some additional syntax checkers
     let g:syntastic_perl_checkers = ['perl']
     let g:syntastic_enable_perl_checker = 1
+
+    " default to python3 - to swtich to python2, change this manually 
+    let g:syntastic_python_python_exec = 'python3'
+    let g:syntastic_python_checkers = ['python']
     
     " doesn't work... I haven't tried to debug, but it's probably some path issue
     "let g:syntastic_javascript_checkers = ['eslint']
@@ -110,6 +114,9 @@ if exists("vim_as_ide") && vim_as_ide==1
     set foldcolumn=4                    " the number of columns to use for folding display at the left
 endif
 
+" find (grep) in files
+"map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-from=$HOME/.vim/exclude.list . -e " . expand("<cword>") . " " <bar> cwindow<CR>
 
 " --- General settings ------------------------------------------------------
 filetype plugin indent on           " required - turn on file type specific indening
@@ -145,6 +152,9 @@ runtime macros/matchit.vim          " allow % to match html/xml tags
 "set matchpairs+=<:>
 
 helptags ~/.vim/doc                 " include user defined help doc
+
+" use system clipboard (I've never tested this)
+"set clipboard=unnamed
 
 " use syntax checking for python3
 let g:pymode_python = 'python3'
@@ -183,5 +193,37 @@ au FileType make set noexpandtab shiftwidth=8 tabstop=8
 " php
 "au FileType php let g:php_folding=2  " I don't know why this doesn't work...
 let g:php_folding=2
+
+" function to add acent marks to vowels
+" Mapped to the '-' key
+function! ToggleAccent()
+   " Vowels
+   let withAccent   = [ "á", "é", "í", "ó", "ú", "ñ", "Á", "É", "Í", "Ó", "Ú", "Ñ" ]
+   let withNoAccent = [ "a", "e", "i", "o", "u", "n", "A", "E", "I", "O", "U", "N" ]
+
+   " A better way of getting the character under the cursor
+   " From: https://stackoverflow.com/a/23323958/1121933
+   let character = matchstr( getline('.'), '\%' . col('.') . 'c.' )
+
+   " If it's a vowel without an acute accent over it, 'position' will contain
+   " the index of the matching element in the 'withNoAccent' list or -1 otherwise.
+   let position = match( withNoAccent , character )
+   if position != -1
+      " Replace it with an accented vowel
+      execute ":normal! r" . withAccent[position]
+   else
+      " Check if it's a vowel with an acute accent over it
+      let position = match( withAccent , character )
+      if position != -1
+         " Replace it with a vowel with no accent
+         execute ":normal! r" . withNoAccent[position]
+     endif
+   endif
+
+   " Do nothing if it isn't a vowel
+endfunction
+
+" Map the '-' key
+nnoremap <silent> - :call ToggleAccent()<CR>
 
 
