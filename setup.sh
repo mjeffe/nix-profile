@@ -41,7 +41,7 @@ if test -f $HOME/.config/conky/conky.conf; then
     echo "$this: $HOME/.config/conky/conky.conf exits, renaming to $HOME/.config/conky/conky.conf.$$"
     mv $HOME/.config/conky/conky.conf $HOME/.config/conky/conky.conf.$$
 fi 
-cp conkyrc $HOME/.config/conky/conky.conf
+cp conky.conf $HOME/.config/conky/conky.conf
 
 # install default crontab
 crontab crontab.default
