@@ -111,11 +111,16 @@ if exists("vim_as_ide") && vim_as_ide==1
     " --- A few general settings that I only want in the IDE
     set number                          " show line numbers in left gutter
     set mouse=a                         " enable mouse - hold the SHIFT key to use normal mouse copy/paste buffer
-    set foldcolumn=4                    " the number of columns to use for folding display at the left
+    "set foldcolumn=4                    " the number of columns to use for folding display at the left
+
+    " F6 to toggle settings allowing copy of multiline text
+    map <F6> :set nonumber!<CR>:NERDTreeTabsToggle<CR>
 endif
 
 " find (grep) in files
+" vimgrep is really slow...
 "map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+" regular grep has anoying extra messages
 map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-from=$HOME/.vim/exclude.list . -e " . expand("<cword>") . " " <bar> cwindow<CR>
 
 " --- General settings ------------------------------------------------------
@@ -226,4 +231,14 @@ endfunction
 " Map the '-' key
 nnoremap <silent> - :call ToggleAccent()<CR>
 
-
+" spell checking and correcting
+" To manually turn spell checking on/off
+" :setlocal spell
+" :set spell
+" :set nospell
+"
+set spelllang=en_us
+set spellfile=$HOME/Dropbox/vim/spell/en.utf-8.add
+" auto turn on spell checking for certain types of files
+"autocmd BufRead,BufNewFile *.md setlocal spell
+"autocmd BufRead,BufNewFile *.txt setlocal spell
