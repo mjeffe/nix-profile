@@ -1,11 +1,15 @@
 #!/bin/sh
 #
-# $Id$
+# mjeffe's profile stuff for *nix boxes
+#
+# Should be cloned to $HOME/src/
 #
 
-WD=`pwd`
 this=`basename $0`
-JAMESTOOLS=/home/mjeffe/src/acx/sawmill/jamestools
+BASEDIR=$HOME/src
+# companion projects
+NIX_UTILS=$BASEDIR/nix-utils
+JAMESTOOLS=$BASEDIR/acx/sawmill/jamestools
 
 # ------------
 # base profile stuff
@@ -72,10 +76,11 @@ cp vimrc-ide $HOME/.vimrc-ide
 # ------------
 # my common ~/bin utilities
 # ------------
-echo $this: installing common utilities
+echo $this: installing nix-utils
 
-if test -d $WD/../../utils; then
-    cd $WD/../../utils
+if test -d $NIX_UTILS; then
+    cd $NIX_UTILS/src/
+    make install
     make install_all
 else
     echo "$this: unable to find common utilities project, skipping..."
