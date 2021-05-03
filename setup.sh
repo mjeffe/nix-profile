@@ -10,44 +10,49 @@ BASEDIR=$HOME/src
 # companion projects
 NIX_UTILS=$BASEDIR/nix-utils
 JAMESTOOLS=$BASEDIR/acx/sawmill/jamestools
+MAKE_MACHINE=`uname -s | tr [a-z] [A-Z]`
+
+_safe_copy() {
+    local src="$1"
+    local dest="$2"
+    local opts=
+
+    if test -z $src -o -z $dest; then
+        echo "'source' or 'destination' argument was missing"
+        exit 1
+    fi
+
+    echo "  installing $dest"
+    if test -f $dest -o -d $dest; then
+        echo "    $dest exits, renaming to ${dest}.$$"
+        mv $dest ${dest}.$$
+    fi
+
+    # handle copying directories
+    if test -d $src; then
+        opts="$opts -r"
+    fi
+    cp $opts $src $dest
+}
+
 
 # ------------
 # base profile stuff
 # ------------
 echo $this: installing profile files
 
-if test -f $HOME/.bashrc; then
-    echo "$this: $HOME/.bashrc exits, renaming to $HOME/.bashrc.$$"
-    mv $HOME/.bashrc $HOME/.bashrc.$$
-fi
-cp ./bashrc $HOME/.bashrc
+# ubuntu seems to prefer .profile over .bash_profile
+_safe_copy ./bash_profile $HOME/.profile
+echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.profile
+#_safe_copy ./bash_profile $HOME/.bash_profile 
+#echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.bash_profile
 
-if test -f $HOME/.bash_profile; then
-    echo "$this: $HOME/.bash_profile exits, renaming to $HOME/.bash_profile.$$"
-    mv $HOME/.bash_profile $HOME/.bash_profile.$$
-fi 
-cp bash_profile $HOME/.bash_profile 
-echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.bash_profile
-    
-if test -f $HOME/.gitconfig; then
-    echo "$this: $HOME/.gitconfig exits, renaming to $HOME/.gitconfig.$$"
-    mv $HOME/.gitconfig $HOME/.gitconfig.$$
-fi
-cp ./gitconfig $HOME/.gitconfig
+_safe_copy ./bashrc $HOME/.bashrc
+_safe_copy ./gitconfig $HOME/.gitconfig
+_safe_copy ./Xdefaults $HOME/.Xdefaults
+_safe_copy ./conky.conf $HOME/.config/conky/conky.conf
 
-if test -f $HOME/.Xdefaults; then
-    echo $this: $HOME/.Xdefaults exits, renaming to $HOME/.Xdefaults.$$
-    mv $HOME/.Xdefaults $HOME/.Xdefaults.$$
-fi 
-cp Xdefaults $HOME/.Xdefaults
-
-if test -f $HOME/.config/conky/conky.conf; then
-    echo "$this: $HOME/.config/conky/conky.conf exits, renaming to $HOME/.config/conky/conky.conf.$$"
-    mv $HOME/.config/conky/conky.conf $HOME/.config/conky/conky.conf.$$
-fi 
-cp conky.conf $HOME/.config/conky/conky.conf
-
-# install default crontab
+echo $this: installing default crontab
 crontab crontab.default
     
 # ------------
@@ -55,23 +60,20 @@ crontab crontab.default
 # ------------
 echo $this: installing custom vim stuff
 
-if test -f $HOME/.vim; then
-    echo "$this: $HOME/.vim exits, renaming to $HOME/.vim.$$"
-    mv $HOME/.vim $HOME/.vim.$$
-fi 
-cp -r vim $HOME/.vim
+_safe_copy ./vimrc $HOME/.vimrc
+_safe_copy ./vimrc-ide $HOME/.vimrc-ide
+_safe_copy ./vim $HOME/.vim
+# "install" Vundle directly into the .vim/ dir
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+# install all my vim plugins
+vim -u ~/.vimrc-ide -n -c PluginInstall  -c exit -c exit
 
-if test -f $HOME/.vimrc; then
-    echo "$this: $HOME/.vimrc exits, renaming to $HOME/.vimrc.$$"
-    mv $HOME/.vimrc $HOME/.vimrc.$$
-fi 
-cp vimrc $HOME/.vimrc
+# ------------
+# ssh stuff
+# ------------
+echo $this: installing custom ssh stuff
 
-if test -f $HOME/.vimrc-ide; then
-    echo "$this: $HOME/.vimrc-ide exits, renaming to $HOME/.vimrc-ide.$$"
-    mv $HOME/.vimrc-ide $HOME/.vimrc-ide.$$
-fi 
-cp vimrc-ide $HOME/.vimrc-ide
+_safe_copy ./ssh $HOME/.ssh
 
 # ------------
 # my common ~/bin utilities
