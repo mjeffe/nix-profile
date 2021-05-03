@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# This is a skeleton .ssh/config file with examples of some of the things I
+# typically need. Note that ssh will recognize Host names in this file, even
+# without a DNS entry or an entry in /etc/hosts. However, if the config entry
+# references some other entry, such as when using the ProxyCommand, then it
+# fails. So in general, it's best that Host entries you set in here, are either
+# ip addresses or can be looked up via DNS or /etc/hosts.
+# ---------------------------------------------------------------------------
+
+# defaults for all hosts
+Host *
+   ServerAliveInterval 240
+   IdentitiesOnly yes
+   ForwardX11 yes 
+
+
+# ===========================================================================
+# AWS instances
+#
+# I set up access to VPC's servers ONLY through the bastion server. For each
+# connection we use the ProxyCommand which transparently allows us to connect
+# via a hop through the bastion server. Linux is so cool!
+# ===========================================================================
+
+# VPC bastion server
+Host my_bastion
+   # public ip address 
+   Hostname xxx.xxx.xxx.xxx
+   IdentityFile ~/.ssh/my_bastion_rsa
+
+# server inside the VPC - forwarded through bastion server
+Host my_private_server
+   # private VPC ip address
+   Hostname 10.0.7.100
+   User my_username
+   IdentityFile ~/.ssh/my_vpc_private_rsa 
+   ForwardAgent yes
+   Port 22
+   ProxyCommand ssh -W %h:%p my_bastion
+
+# database server inside the VPC
+Host my_private_dbserver
+   Hostname 10.0.7.101
+   IdentityFile ~/.ssh/my_vpc_private_rsa
+   ForwardAgent yes
+   Port 22
+   ProxyCommand ssh -W %h:%p my_bastion
+   # tunnel to allow Tora to connect to postgres on remote host via local port 2175
+   LocalForward 2175 127.0.0.1:5432
+   # tunnel to allow Tora to connect to mysql on remote server via local port 2176
+   LocalForward 2176 127.0.0.1:3306
+   # tunnel to allow connecting to remote web server via local port 8888
+   LocalForward 8888 127.0.0.1:80
+   # tunnel to allow remote server to access svn repo on local lan 
+   RemoteForward 2074 svnserver.local.lan:22
+
+# ===========================================================================
+# Other options
+# ===========================================================================
+
+# host that does not have keys enabled
+# must override my global default
+Host some_other_host
+   PreferredAuthentications password
+   PubkeyAuthentication no
+
+# for my local (older) kvm virtual machines
+Host ktdev 192.168.0.51
+   ForwardX11 yes 
+   GSSAPIAuthentication=no
+
