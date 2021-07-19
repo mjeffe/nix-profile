@@ -8,11 +8,6 @@
 # ---------- mjeffe's stuff ------------------
 #
 
-# Source global definitions
-if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
-fi
-
 set -o vi       # use vi for command history editing
 umask 002       # make files read/write-able by group
 

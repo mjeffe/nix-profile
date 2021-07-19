@@ -8,7 +8,7 @@
 this=`basename $0`
 BASEDIR=$HOME/src
 # companion projects
-NIX_UTILS=$BASEDIR/nix-utils
+NIX_UTILS=$BASEDIR/mrj/nix-utils
 JAMESTOOLS=$BASEDIR/acx/sawmill/jamestools
 MAKE_MACHINE=`uname -s | tr [a-z] [A-Z]`
 
@@ -42,12 +42,22 @@ _safe_copy() {
 echo $this: installing profile files
 
 # ubuntu seems to prefer .profile over .bash_profile
-_safe_copy ./bash_profile $HOME/.profile
-echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.profile
-#_safe_copy ./bash_profile $HOME/.bash_profile 
-#echo -e "\nexport MAKE_MACHINE=$MAKE_MACHINE" >> $HOME/.bash_profile
+_safe_copy ./bash_profile $HOME/.profile-mrj
+cat <<EOF >> $HOME/.profile
 
-_safe_copy ./bashrc $HOME/.bashrc
+# add my stuff
+export MAKE_MACHINE=$MAKE_MACHINE
+. ~/.profile-mrj
+EOF
+
+# append my bashrc to the end of default
+_safe_copy ./bashrc $HOME/.bashrc-mrj
+cat <<EOF >> $HOME/.bashrc
+
+# add my stuff
+. ~/.profile-mrj
+EOF
+
 _safe_copy ./gitconfig $HOME/.gitconfig
 _safe_copy ./Xdefaults $HOME/.Xdefaults
 _safe_copy ./conky.conf $HOME/.config/conky/conky.conf
@@ -69,11 +79,11 @@ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim -u ~/.vimrc-ide -n -c PluginInstall  -c exit -c exit
 
 # ------------
-# ssh stuff
+# ssh stuff TODO: handle this as ln -s from Dropbox's db_crypt (check if .ssh is already a symlink...)
 # ------------
-echo $this: installing custom ssh stuff
+#echo $this: installing custom ssh stuff
 
-_safe_copy ./ssh $HOME/.ssh
+#_safe_copy ./ssh $HOME/.ssh
 
 # ------------
 # my common ~/bin utilities
@@ -85,7 +95,8 @@ if test -d $NIX_UTILS; then
     make install
     make install_all
 else
-    echo "$this: unable to find common utilities project, skipping..."
+    echo "$this:   dir: $NIX_UTILS"
+    echo "$this:   unable to find common utilities project, skipping..."
 fi
 
 # ------------
