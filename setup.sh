@@ -2,7 +2,15 @@
 #
 # mjeffe's profile stuff for *nix boxes
 #
-# Should be cloned to $HOME/src/
+# Caveat emptor:
+# I have not been very careful to make this "genericaly installable".  It
+# installs my stuff the way I like it. Although you *can* clone this project
+# and run the installer, I sugest you instead, use it as a refernence.
+#
+# Some things you should definitely change or remove:
+#
+# * this assumes it is cloned in $HOME/src/mrj/
+# * Modify the .gitconfig stuff with your name and credentials
 #
 
 this=`basename $0`
@@ -58,9 +66,14 @@ cat <<EOF >> $HOME/.bashrc
 . ~/.profile-mrj
 EOF
 
+# ------------
+# git
+# ------------
 _safe_copy ./gitconfig $HOME/.gitconfig
 _safe_copy ./Xdefaults $HOME/.Xdefaults
 _safe_copy ./conky.conf $HOME/.config/conky/conky.conf
+# add my project specific gitconfig
+_safe_copy ./gitconfig-mrj $BASEDIR/mrj/.gitconfig
 
 echo $this: installing default crontab
 crontab crontab.default
@@ -79,10 +92,11 @@ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim -u ~/.vimrc-ide -n -c PluginInstall  -c exit -c exit
 
 # ------------
-# ssh stuff TODO: handle this as ln -s from Dropbox's db_crypt (check if .ssh is already a symlink...)
+# ssh stuff - NOTE I no longer use this.
+# Instead I download or dropbox sync the entire encrypted .ssh dir and symlink it
 # ------------
 #echo $this: installing custom ssh stuff
-
+#
 #_safe_copy ./ssh $HOME/.ssh
 
 # ------------

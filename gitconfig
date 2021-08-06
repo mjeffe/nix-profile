@@ -10,13 +10,27 @@
 	flog = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --full-history --sparse --date=local
 	# who log
 	wlog = log --pretty=format:"%h%x09%an%x09%ad%x09%s" --date=local 
-[credential]
-	helper = !aws codecommit --profile default --region us-east-1 credential-helper $@
-	usehttppath = true
 [remote "origin"]
 	prune = true
 [merge]
 	stat = true
+[core]
+	excludesfile = ~/.gitignore_global
+
+# these should/may be overridden in the directory specific .gitconfig
+[credential]
+	helper = !aws codecommit --profile default --region us-east-1 credential-helper $@
+	usehttppath = true
 [user]
 	email = matt@mattjeffery.dev
 	name = Matt Jeffery
+
+# include directory specific git configs
+[includeIf "gitdir:~/src/mrj"]
+    path = ~/src/mrj/.gitconfig
+[includeIf "gitdir:~/src/arc"]
+    path = ~/src/arc/.gitconfig
+[includeIf "gitdir:~/src/amarki"]
+    path = ~/src/amarki/.gitconfig
+[includeIf "gitdir:~/src/mrgh"]
+    path = ~/src/mrgh/.gitconfig
