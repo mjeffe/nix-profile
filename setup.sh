@@ -54,8 +54,7 @@ _safe_copy ./bash_profile $HOME/.profile-mrj
 cat <<EOF >> $HOME/.profile
 
 # add my stuff
-export MAKE_MACHINE=$MAKE_MACHINE
-. ~/.profile-mrj
+. "$HOME/.profile-mrj"
 EOF
 
 # append my bashrc to the end of default
@@ -63,7 +62,7 @@ _safe_copy ./bashrc $HOME/.bashrc-mrj
 cat <<EOF >> $HOME/.bashrc
 
 # add my stuff
-. ~/.profile-mrj
+. "$HOME/.bashrc-mrj"
 EOF
 
 # ------------
