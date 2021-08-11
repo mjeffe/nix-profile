@@ -71,7 +71,10 @@ EOF
 # ------------
 _safe_copy ./gitconfig $HOME/.gitconfig
 _safe_copy ./Xdefaults $HOME/.Xdefaults
+
+mkdir -p $HOME/.config/conky
 _safe_copy ./conky.conf $HOME/.config/conky/conky.conf
+
 # add my project specific gitconfig
 _safe_copy ./gitconfig-mrj $BASEDIR/mrj/.gitconfig
 
