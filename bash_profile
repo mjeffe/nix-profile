@@ -14,16 +14,10 @@ export VISUAL=vim
 export CVS_RSH=ssh
 export CVSEDITOR=vim
 
-export PS1='[\u@\h[$ORACLE_SID]:\w]$ '
+#export PS1='[\u@\h[$ORACLE_SID]:\w]$ '
 
 # used by most acx and mrj Makefiles
 export MAKE_MACHINE=LINUX
-
-# Get the aliases and functions
-if [ -f ~/.bashrc ]; then
-	. ~/.bashrc
-fi
-
 
 # # uncomment for server type machines
 # #
