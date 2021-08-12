@@ -11,9 +11,9 @@
 set -o vi       # use vi for command history editing
 umask 002       # make files read/write-able by group
 
-# git helpers
-source /etc/bash_completion.d/git-prompt
-source /usr/share/bash-completion/completions/git
+# git helpers - I think these are obsolete
+#source /etc/bash_completion.d/git-prompt
+#source /usr/share/bash-completion/completions/git
 
 # -------------------------------
 # aliases
@@ -36,7 +36,7 @@ git_branch() {
     git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 #export PS1=‘[\u@\h:\w]$ ’
-PS1="\[\e[0;32m\]\u@amarki\[\e[m\]" # username
+PS1="\[\e[0;32m\]\u@\h\[\e[m\]" # username
 PS1+=":"
 PS1+="\[\e[0;36m\]\w\[\e[m\]" # pwd
 #PS1+="\[\e[0;92m\]\$(git_branch)\[\e[m\]" # git branch
