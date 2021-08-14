@@ -85,10 +85,15 @@ if exists("vim_as_ide") && vim_as_ide==1
     " default to python3 - to swtich to python2, change this manually 
     let g:syntastic_python_python_exec = 'python3'
     let g:syntastic_python_checkers = ['python']
-    
+
     " doesn't work... I haven't tried to debug, but it's probably some path issue
     "let g:syntastic_javascript_checkers = ['eslint']
     "let g:syntastic_javascript_eslint_exe = 'npm run lint --'
+
+    " disable for html - this didn't work for me
+    "let g:syntastic_disabled_filetypes=['html']
+    " Ignore all of tidy's warnings:
+    let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
 
     " ----- crtlpvim/ctrlp settings -----
     let g:ctrlp_match_window = 'order:ttb,min:1,max:30,results:30'
@@ -124,14 +129,23 @@ endif
 map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-from=$HOME/.vim/exclude.list . -e " . expand("<cword>") . " " <bar> cwindow<CR>
 
 " --- General settings ------------------------------------------------------
+"
+"  note, a great resource is the vimrc of vim devs. For example, some of these
+"  settings were inspired by scrooloose: https://github.com/scrooloose/vimfiles/blob/master/vimrc
+"
 filetype plugin indent on           " required - turn on file type specific indening
 set backspace=indent,eol,start      " make backspace work as you would expect - allow backspacing over line breaks,
                                     " automatically-inserted indentation, or the place where insert mode started
 set ruler                           " show vim ruler
-set showcmd
+set showcmd                         " show incomplete cmds in bottom status bar
+set showmode                        " show current mode in bottom status bar
 set incsearch                       " jump to search results as typing?
 set encoding=utf-8
 set cryptmethod=blowfish            " algorithm to use for encrypted files (use :X)
+
+"display tabs and trailing spaces
+set list
+set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 
 " put swap files under ~/.vim (to prevent Dropbox from syncing them)
 set backupdir=~/.vim/backup//
@@ -173,7 +187,7 @@ set foldlevel=1                     " only fold 1 level at a time?
 set foldlevelstart=99               " start folding at this level (99 = essentially don't fold)
 " only want foldcolumn set for IDE - see above
 "set foldcolumn=4                    " the number of columns to use for folding display at the left
-
+"set fillchars=vert:\|
 
 " abbreviations allow you do :<abbrev><space> and it will expand
 abbrev gm !php artisan generate:model
@@ -242,3 +256,13 @@ set spellfile=$HOME/Dropbox/vim/spell/en.utf-8.add
 " auto turn on spell checking for certain types of files
 "autocmd BufRead,BufNewFile *.md setlocal spell
 "autocmd BufRead,BufNewFile *.txt setlocal spell
+
+" spell check when writing commit logs
+autocmd filetype svn,*commit* setlocal spell
+autocmd filetype git,*commit* setlocal spell
+
+"source project specific config files
+runtime! projects/**/*.vim
+
+
+
