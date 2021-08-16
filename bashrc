@@ -11,7 +11,7 @@
 set -o vi       # use vi for command history editing
 umask 002       # make files read/write-able by group
 
-# git helpers - I think these are obsolete
+# git helpers
 #source /etc/bash_completion.d/git-prompt
 #source /usr/share/bash-completion/completions/git
 
@@ -28,6 +28,7 @@ alias vide='vim -u ~/.vimrc-ide'
 alias gitsdiff="git difftool -y -x 'sdiff -w `tput cols`'"
 alias fucking='sudo'
 alias hulksmash='rm -fr'
+alias opn="xdg-open"
 alias ab='./scripts/ab'
 alias amarki='./utils/amarki'
 alias sail='bash vendor/bin/sail'
