@@ -151,6 +151,9 @@ set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
 
+" set the width at which gq command will wrap (default is 78)
+set textwidth=118
+
 " set shiftwidth and tabstop to the same value, and set expandtab to always insert spaces
 set shiftwidth=4                    " set the number of spaces to use for a tab
 set tabstop=4                       " sets a tab equivalent to 3 spaces
