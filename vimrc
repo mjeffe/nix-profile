@@ -35,6 +35,10 @@ if exists("vim_as_ide") && vim_as_ide==1
     " CtrlP quick file finder
     Plugin 'ctrlpvim/ctrlp.vim'
 
+    " ctags management
+    " be sure to `sudo apt install exuberant-tags`
+    Plugin 'ludovicchabant/vim-gutentags'
+
     " Vue.js syntax highlighting
     Plugin 'posva/vim-vue'
 
@@ -112,6 +116,75 @@ if exists("vim_as_ide") && vim_as_ide==1
       \ 'dir':  '\.git$\|\.svn$\|node_modules$\|vendor$\|log$\|tmp$',
       \ 'file': '\.exe$\|\.so$\|\.dat$\|\.jpg$\|\.jpeg$\|\.png\|\.pdf$'
       \ }
+
+    " ----- ludovicchabant/vim-gutentags settings -----
+    " big help from: https://www.reddit.com/r/vim/comments/d77t6j/guide_how_to_setup_ctags_with_gutentags_properly/
+    let g:gutentags_generate_on_new = 1
+    let g:gutentags_generate_on_missing = 1
+    let g:gutentags_generate_on_write = 1
+    let g:gutentags_generate_on_empty_buffer = 0
+    " define some extra root markers
+    "let g:gutentags_add_default_project_roots = 0
+    "let g:gutentags_project_root = ['package.json', '.git', '.svn']
+    let g:gutentags_project_root = ['package.json']
+    " generate tags and tags.lock files in this dir rather than the project dir
+    let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
+    " generate a little extra info with the tags
+    let g:gutentags_ctags_extra_args = [
+        \ '--tag-relative=yes',
+        \ '--fields=+ailmnS',
+        \ ]
+    let g:gutentags_ctags_exclude = [
+        \ 'tmp/*',
+        \ 'log/*',
+        \ 'coverage/*',
+        \ '*.git', '*.svg', '*.hg',
+        "\ '*/tests/*',
+        \ 'build',
+        \ 'dist',
+        \ '*sites/*/files/*',
+        \ 'bin',
+        \ 'node_modules',
+        \ 'bower_components',
+        \ 'cache',
+        \ 'compiled',
+        \ 'docs', 'doc/*',
+        \ 'example',
+        \ 'bundle',
+        \ 'vendor',
+        \ '*.md',
+        \ '*-lock.json',
+        \ '*.lock',
+        \ '*bundle*.js',
+        \ '*build*.js',
+        \ '.*rc*',
+        \ '*.json',
+        \ '*.min.*',
+        \ '*.map',
+        \ '*.bak',
+        \ '*.zip',
+        \ '*.pyc',
+        \ '*.class',
+        \ '*.sln',
+        \ '*.Master',
+        \ '*.csproj',
+        \ '*.tmp',
+        \ '*.csproj.user',
+        \ '*.cache',
+        \ '*.pdb',
+        \ 'tags*',
+        \ 'cscope.*',
+        \ '*.css',
+        \ '*.less',
+        \ '*.scss',
+        \ '*.exe', '*.dll',
+        \ '*.mp3', '*.ogg', '*.flac',
+        \ '*.swp', '*.swo',
+        \ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
+        \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+        \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
+        \ ]
+
 
     " --- A few general settings that I only want in the IDE
     set number                          " show line numbers in left gutter

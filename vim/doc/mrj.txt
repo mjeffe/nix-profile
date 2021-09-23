@@ -49,10 +49,14 @@ Cheat sheet when running as IDE:
     gt       cycle between open tabs
     :tabs    list all open tabs
     <shift>mouseover/mouseclick Used to do normal copy and paste when mouse is enabled
-    
+
     ctags:
-    Ctrl]    jump to where the method is defined
-    Ctrl^    jump back to previous edit position
+    Ctrl-]   jump to first definition of tag under cursor
+    Ctrl-^   jump back to previous edit position
+    Ctrl-T   pop the tag stack (jump back up the path you just descended)
+    g]       to list all entries for the tag under cursor
+    :tag A.. jump to tag, but tab will list all tags begining with A...
+    :tags    list the tag stack
 
 
 ====================================================================
