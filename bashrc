@@ -19,7 +19,7 @@ umask 002       # make files read/write-able by group
 # aliases
 # -------------------------------
 alias ls="ls -F"
-alias ll="~/bin/ll"
+alias ll="ls -lF --group-directories-first"
 alias more=`which less`
 alias vi=`which vim`
 alias view="`which vim` -R"
@@ -32,6 +32,18 @@ alias opn="xdg-open"
 alias ab='./scripts/ab'
 alias amarki='./utils/amarki'
 alias sail='bash vendor/bin/sail'
+
+# long listing, directories last, like on DEC Unix
+#unalias ll
+#ll() {
+#    ls -lF $* | grep --color=no -v '/$'
+#    ls -lF $* | grep --color=no '/$'
+#}
+
+# list the most recently changed files
+lt() {
+    ls -lArtF "$@" | tail -20
+}
 
 git_branch() {
     git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
