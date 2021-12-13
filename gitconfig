@@ -16,10 +16,19 @@
 	fhlog = log --oneline --find-renames --stat --follow
 [remote "origin"]
 	prune = true
+[fetch]
+	prune = true
 [merge]
 	stat = true
 [core]
 	excludesfile = ~/.gitignore_global
+[diff]
+	colorMoved = zebra
+	tool = mycustomdiff
+[difftool "mycustomdiff"]
+	cmd = ~/.vim/side-by-side-diff.sh \"$LOCAL\" \"$REMOTE\" | less
+[difftool]
+	prompt = false
 
 # these should/may be overridden in the directory specific .gitconfig
 [credential]
