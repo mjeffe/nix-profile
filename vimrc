@@ -36,7 +36,7 @@ if exists("vim_as_ide") && vim_as_ide==1
     Plugin 'ctrlpvim/ctrlp.vim'
 
     " ctags management
-    " be sure to `sudo apt install exuberant-tags`
+    " be sure to `sudo apt install exuberant-ctags`
     Plugin 'ludovicchabant/vim-gutentags'
 
     " Vue.js syntax highlighting
@@ -123,12 +123,15 @@ if exists("vim_as_ide") && vim_as_ide==1
     let g:gutentags_generate_on_missing = 1
     let g:gutentags_generate_on_write = 1
     let g:gutentags_generate_on_empty_buffer = 0
-    " define some extra root markers
+    " define some extra root markers - useful for javascript projects within
+    " other projects
     "let g:gutentags_add_default_project_roots = 0
     "let g:gutentags_project_root = ['package.json', '.git', '.svn']
     let g:gutentags_project_root = ['package.json']
     " generate tags and tags.lock files in this dir rather than the project dir
     let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
+    " set message in status line when gutentags is generating tags
+    "set statusline+=%{gutentags#statusline()}
     " generate a little extra info with the tags
     let g:gutentags_ctags_extra_args = [
         \ '--tag-relative=yes',
