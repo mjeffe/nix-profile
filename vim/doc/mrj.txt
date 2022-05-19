@@ -193,3 +193,11 @@ Section: Tricks                                       *MrjTricks*
         Then invoke sort
 
             :sort
+
+    Toggle accent on vowels
+        I have the '-' key mapped to a function in ~/.vimrc that will toggle
+        the accent mark on vowels in command mode. Place the cursor over the
+        vowel, then use '-'. See ~/.vimrc for details.
+
+        Note, Vim has more extensive accent support. See help :digraphs
+
