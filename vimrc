@@ -219,7 +219,7 @@ set incsearch                       " jump to search results as typing?
 set encoding=utf-8
 set cryptmethod=blowfish            " algorithm to use for encrypted files (use :X)
 
-"display tabs and trailing spaces
+"display tabs and trailing spaces, turn of with :set nolist
 set list
 set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 
