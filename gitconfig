@@ -41,9 +41,11 @@
 # include directory specific git configs
 [includeIf "gitdir:~/src/mrj"]
     path = ~/src/mrj/.gitconfig
+[includeIf "gitdir:~/src/mrgh"]
+    path = ~/src/mrgh/.gitconfig
 [includeIf "gitdir:~/src/arc"]
     path = ~/src/arc/.gitconfig
 [includeIf "gitdir:~/src/amarki"]
     path = ~/src/amarki/.gitconfig
 [includeIf "gitdir:~/src/mrgh"]
-    path = ~/src/mrgh/.gitconfig
+    path = ~/src/ren/.gitconfig
