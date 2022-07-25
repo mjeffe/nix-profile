@@ -5,7 +5,11 @@
 #export ORACLE_SID=CCTST
 #ORAENV_ASK=NO . oraenv
 
-export PATH=.:$HOME/bin:$PATH
+# !!! Comment next line out if on multi-user system !!!
+# having current directory in your path can be a security risk, even on a
+# single user system. google it
+#export PATH=$PATH:.
+export PATH=$HOME/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
 
 export EDITOR=vim
