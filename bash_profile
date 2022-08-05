@@ -1,6 +1,13 @@
+#
 # mjeffe .bash_profile
 #
-# User specific environment and startup programs
+# Reminder...
+#
+#  Bash will execute the ~/.profile for login shells. The ~/.bashrc is only
+#  sourced for non-login, interactive shells, so be sure to source it somewhere
+#  in your .profile.  See the INVOCATION chapter in the bash man page for details,
+#  including file name precedence (~/.bash_profile vs ~/.profile), etc.
+#
 
 #export ORACLE_SID=CCTST
 #ORAENV_ASK=NO . oraenv
