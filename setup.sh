@@ -108,8 +108,8 @@ echo $this: installing nix-utils
 
 if test -d $NIX_UTILS; then
     cd $NIX_UTILS/src/
-    make install
-    make install_all
+    make install_linked
+    make install_binaries
 else
     echo "$this:   dir: $NIX_UTILS"
     echo "$this:   unable to find common utilities project, skipping..."
