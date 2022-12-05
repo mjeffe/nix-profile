@@ -31,6 +31,15 @@ git_branch() {
     git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
+# new gnome-terminal on ubuntu 22.04, no longer reports lines x cols when
+# resizing so here I create the function to set it in the title
+set_window_title() {
+    #echo -en "\033]0;$(pwd | sed -e 's;^$HOME;~;') ($(stty size))\a"
+    #echo -en "\033]0;$(pwd | sed -e 's;^$HOME;~;') ($(tput lines) x $(tput cols))\a"
+    echo -en "\033]0;(${LINES}x${COLUMNS}) $(pwd | sed -e "s;^$HOME;~;")\a"
+}
+export PROMPT_COMMAND=set_window_title
+
 # -------------------------------
 # PS1 command prompt
 # -------------------------------
@@ -64,17 +73,19 @@ alias opn="xdg-open"
 alias ol='aws sso login'
 #alias ab='./scripts/ab'
 #alias amarki='./utils/amarki'
+alias darc='./darc'
 
 # -------------------------------
 # shit to make working on the bletcherous MacOS more tolerable
 # -------------------------------
 
-BREW_HOME=$(brew --prefix)
-export PATH="$BREW_HOME/opt/curl/bin:$PATH"
+if [ "$OSTYPE" = 'darwin'* ]; then
+    BREW_HOME=$(brew --prefix)
+    export PATH="$BREW_HOME/opt/curl/bin:$PATH"
 
-# https://github.com/fabiomaia/linuxify
-if [ -f ~/.linuxify ]; then
-    . ~/.linuxify
+    # https://github.com/fabiomaia/linuxify
+    if [ -f ~/.linuxify ]; then
+        . ~/.linuxify
+    fi
 fi
-
 
