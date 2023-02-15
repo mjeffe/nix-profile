@@ -26,8 +26,9 @@ if exists("vim_as_ide") && vim_as_ide==1
     "
 
     " file tree browser
-    Plugin 'scrooloose/nerdtree'
-    Plugin 'jistr/vim-nerdtree-tabs'
+    Plugin 'preservim/nerdtree'
+    "Plugin 'scrooloose/nerdtree'       " seems to be abandoned?
+    Plugin 'jistr/vim-nerdtree-tabs'   " definitely abandoned, see below and my nix-profile repo for my copy
 
     " language error checking
     Plugin 'vim-syntastic/syntastic'
@@ -49,20 +50,31 @@ if exists("vim_as_ide") && vim_as_ide==1
 
     " --- Plugin-specfic settings -----------------------------------------------
 
+    " ----- nerdtree -----
+    " open/close NERDTree with Ctrl-n
+    map <C-n> :NERDTreeToggle<CR>
+
+    "
+    " !!! See below for nerdtree section
+    "
+
     " ----- jistr/vim-nerdtree-tabs -----
     " See :help mrj
+    " NOTE: this plugin is abandoned and the source version is broken.  I have
+    " a "fixed" version in my nix-profile repo which must be copied over after
+    " bundle install.  See notes at the bottom of this file on some attempts
+    " to workaround using this plugin at all.
 
     " open/close NERDTree with Ctrl-n
     "map <C-n> :NERDTreeToggle<CR>
 
     " open/close NERDTree Tabs with \t
-    "nmap <silent> <leader>t :NERDTreeTabsToggle<CR>
+    nmap <silent> <leader>t :NERDTreeTabsToggle<CR>
     nmap <C-n> :NERDTreeTabsToggle<CR>
 
     let g:nerdtree_tabs_open_on_console_startup = 0 " To have NERDTree always open on startup, set to 1
-    "let g:signify_sign_delete_first_line = 'x'     " workaround if not using utf-8
+    let g:signify_sign_delete_first_line = 'x'     " workaround if not using utf-8
     let NERDTreeShowBookmarks = 1                   " start with bookmarks open
-
 
     " ----- scrooloose/syntastic settings -----
     let g:syntastic_error_symbol = '✘'
@@ -91,7 +103,8 @@ if exists("vim_as_ide") && vim_as_ide==1
     let g:syntastic_python_checkers = ['python']
 
     " doesn't work... I haven't tried to debug, but it's probably some path issue
-    "let g:syntastic_javascript_checkers = ['eslint']
+    let g:syntastic_javascript_checkers = ['eslint']
+    "let g:syntastic_javascript_checkers = '$(npm bin)/eslint'
     "let g:syntastic_javascript_eslint_exe = 'npm run lint --'
 
     " disable for html - this didn't work for me
@@ -190,8 +203,14 @@ if exists("vim_as_ide") && vim_as_ide==1
 
 
     " --- A few general settings that I only want in the IDE
+
+    " mouse copy/paste
+    " on Ubuntu: mouse=a works as expected, hold SHIFT to paste with middle mouse button
+    " on Mac: everythign is fucked up... mouse=r seems to work with simple highlight and middle mouse button paste
+    set mouse=a    " Linux or Mac with iTerm2
+    "set mouse=r    " Mac Terminal
+
     set number                          " show line numbers in left gutter
-    set mouse=a                         " enable mouse - hold the SHIFT key to use normal mouse copy/paste buffer
     "set foldcolumn=4                    " the number of columns to use for folding display at the left
 
     " F6 to toggle settings allowing copy of multiline text
@@ -232,8 +251,9 @@ set directory=~/.vim/swap//
 
 " set shiftwidth and tabstop to the same value, and set expandtab to always insert spaces
 set shiftwidth=4                    " set the number of spaces to use for a tab
-set tabstop=4                       " sets a tab equivalent to 3 spaces
+set tabstop=4                       " sets a tab equivalent to n spaces
 set expandtab                       " insert shiftwidth or tabstop spaces whenever a tab is used 
+
 set pastetoggle=<F12>               " toggles the paste nopaste modes to turn on/off automatic indenting
 colorscheme mrj
 "syntax enable                       " enable syntax highlighting, but allow customization (v.s. syn on)
@@ -343,5 +363,52 @@ autocmd filetype git,*commit* setlocal spell
 "source project specific config files
 runtime! projects/**/*.vim
 
-
+" ---------------------------------------------------------------------------
+" Experiments to try and replace the abandoned and now broken
+" vim-nerdtree-tabs plugin.
+"
+" The basic problem that broke vim-nerdtree-tabs is that an update to vim
+" sometime around Jan 2023 changed the behavior of autocommands. You can
+" no longer close your current buffer from within an autocmd.
+" ---------------------------------------------------------------------------
+"
+" This autocmd breaks with error (detected by running :9verbose quit):
+"   Error detected while processing BufEnter Autocommands for "*":
+"   E1312: Not allowed to change the window layout in this autocmd
+"
+"   Looks like a change in Vim no longer allows deleting your current buffer from within an autocmd:
+"       https://groups.google.com/g/vim_dev/c/Cw8McBH6DDM
+"
+" Close the tab if NERDTree is the only window remaining in it.
+"autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+"
+" Have the same NERDTree on every tab - Open the existing NERDTree on each new tab
+"autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+"
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+"autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+"
+"
+" might be able to exploit this:
+"
+"I use the following function to check for the NERDTree existence (in the current tab page; if you need this globally, you'd have to iterate over all tabs with gettabvar()).
+"
+"function! IsNerdTreeEnabled()
+"    return exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
+"endfunction
+"
+"
+"-----------------------------------
+"  This is an attempt to eliminate the NerdTree and vim-nerdtree-tabs plugins
+"  by using the vim native netrw file browser behave like nerdtree.
+"  See: https://shapeshed.com/vim-netrw/
+"let g:netrw_banner = 0
+"let g:netrw_liststyle = 3
+"let g:netrw_browse_split = 4
+"let g:netrw_altv = 1
+"let g:netrw_winsize = 25
+"augroup ProjectDrawer
+"  autocmd!
+"  autocmd VimEnter * :Vexplore
+"augroup END
 
