@@ -1,0 +1,44 @@
+#
+# Matt Jeffery's .bashrc complement
+#
+# shit to make working on the bletcherous MacOS more tolerable
+#
+
+BREW_HOME=$(brew --prefix)
+export PATH="$BREW_HOME/opt/curl/bin:$PATH"
+
+# This is the life saver!!!
+# https://github.com/fabiomaia/linuxify
+if [ -f ~/.linuxify ]; then
+    . ~/.linuxify
+fi
+
+# add git bash completion
+# download the official github completion stuff from the github git/git/contrib/completion
+#
+#   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash \
+#       -o ~/.git-completion.bash
+#
+# then source it here
+if [ -f ~/.git-completion.bash ]; then
+    . ~/.git-completion.bash
+fi
+
+export PATH="/Users/mjeffery/Library/Python/3.10/bin:$PATH"
+
+# the ~/src/opt/linuxify script installed perl.
+# The post install output gave this message:
+#
+#     ==> Caveats
+#     ==> perl
+#     By default non-brewed cpan modules are installed to the Cellar. If you wish
+#     for your modules to persist across updates we recommend using `local::lib`.
+#
+#     You can set that up like this:
+#       PERL_MM_OPT="INSTALL_BASE=$HOME/perl5" cpan local::lib
+#       echo 'eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"' >> ~/.zshrc
+#
+# Which I did, and included the eval line here
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+
+
