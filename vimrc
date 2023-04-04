@@ -16,6 +16,7 @@ filetype off                        " required by Vundle
 if exists("vim_as_ide") && vim_as_ide==1
     " --- Vundle (Vim Plugin manager) begin --------------------------------------
     " Keep all Plugin command between vundle#begin/end
+    " After adding a new plugin, run :PluginInstall
 
     set rtp+=~/.vim/bundle/Vundle.vim   
     call vundle#begin()                 " use default ~/.vim/bundle/ as install dir for plugins 
@@ -42,6 +43,9 @@ if exists("vim_as_ide") && vim_as_ide==1
 
     " Vue.js syntax highlighting
     Plugin 'posva/vim-vue'
+
+    " Rainbow CSV - aids working with csv files
+    Plugin 'mechatroner/rainbow_csv'
 
     call vundle#end()
     filetype plugin indent on           " required - turn on file type specific indening
@@ -300,6 +304,9 @@ abbrev gm !php artisan generate:model
 " --- FileType-specfic settings -----------------------------------------------
 " --- NOTE: Also see files in ~/.vim/after/ftplugin/
 
+" custom filetype detection
+autocmd BufNewFile,BufRead *.edi,*.x12  setf x12
+
 " for /* */ style comments, automatically insert comment leader if comment lines wrap
 au! FileType c,sql set formatoptions+=ro
 
@@ -362,6 +369,60 @@ autocmd filetype git,*commit* setlocal spell
 
 "source project specific config files
 runtime! projects/**/*.vim
+
+" for csv files (with rainbowcsv plugin), dissable my custom colorscheme
+"autocmd filetype csv :call UnsetColorscheme()
+"function! UnsetColorscheme()
+"    syntax reset
+"endfunction
+
+" set filetype specific color schemes
+" Define `let b:colors_name=foo` in ~/.vim/after/ftplugin/<filetype>.vim
+"au BufEnter * if (exists("b:colors_name")) | let b:current_colors=colors_name
+" \| execute "colorscheme " . b:colors_name | endif
+"au BufLeave * if (exists("b:current_colors")) | execute "colorscheme " . b:current_colors | endif
+
+"
+" This isn't working yet - rainbowcsv is still messed up by my custom color
+" scheme
+"
+
+" set filetype specific color schemes
+" Define `let b:colors_name=foo` in ~/.vim/after/ftplugin/<filetype>.vim
+" from: https://vim.fandom.com/wiki/Change_the_color_scheme_to_show_where_you_are
+if has('autocmd')
+    " change colorscheme depending on current buffer
+    " if desired, you may set a user-default colorscheme before this point,
+    " otherwise we'll use the Vim default.
+    " Variables used:
+        " g:colors_name : current colorscheme at any moment
+        " b:colors_name (if any): colorscheme to be used for the current buffer
+        " s:colors_name : default colorscheme, to be used where b:colors_name hasn't been set
+    if has('user_commands')
+        " User commands defined:
+            " ColorScheme <name>
+                " set the colorscheme for the current buffer
+            " ColorDefault <name>
+                " change the default colorscheme
+        command -nargs=1 -bar ColorScheme
+            \ colorscheme <args>
+            \ | let b:colors_name = g:colors_name
+        command -nargs=1 -bar ColorDefault
+            \ let s:colors_name = <q-args>
+            \ | if !exists('b:colors_name')
+                \ | colors <args>
+            \ | endif
+    endif
+    if !exists('g:colors_name')
+        let g:colors_name = 'default'
+    endif
+    let s:colors_name = g:colors_name
+    au BufEnter *
+        \ let s:new_colors = (exists('b:colors_name')?(b:colors_name):(s:colors_name))
+        \ | if s:new_colors != g:colors_name
+            \ | exe 'colors' s:new_colors
+        \ | endif
+endif
 
 " ---------------------------------------------------------------------------
 " Experiments to try and replace the abandoned and now broken
