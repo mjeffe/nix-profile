@@ -17,6 +17,7 @@ CONTENTS                                                       *Mrj*
     4. Git ........................... |MrjGit|
     5. Spell Checking ................ |MrjSpellChecking|
     6. Vim Tricks .................... |MrjTricks|
+    7. VSCode & Vim Tricks ............|MrjVSCodeTricks|
 
 
 ====================================================================
@@ -200,4 +201,60 @@ Section: Tricks                                       *MrjTricks*
         vowel, then use '-'. See ~/.vimrc for details.
 
         Note, Vim has more extensive accent support. See help :digraphs
+
+    Replace all occurences of a word
+        The most powerful method is using sed like regex search and replace.
+
+            :'a,. s/foo/bar/g
+
+        But another technique which can be really nice is to use 'cgn' with '.'
+
+            /foo    # search for word
+            cgn     # c = change, gn = find next match with last search pattern
+            bar     # type the new word
+            .       # repeat
+            .       # repeat again, ...
+
+    Change case
+        Use the ~ (toggle case), U (uppercase) and u (lowercase) commands to
+        change the case of selections.
+
+        Using visual mode:
+            Ctrl-v  # make selection
+            # then
+            ~       # toggle case
+            U       # uppercase everything
+            u       # lowercase everything
+
+        Using the g command:
+            g~{motion}  # toggle case
+            gU{motion}  # uppercase
+            gu{motion}  # lowercase
+
+====================================================================
+Section: VSCodeTricks                           *MrjVSCodeTricks*
+
+    Multi Cursor Replace
+        Replace all occurrences of a given work with another word. Say
+        we want to replace all 'foo' with 'bar'.
+
+            viw         # if your cursor is on the word
+            # OR
+            /foo        # search for the word
+
+            Ctrl/Cmd D  # linux/mac Ctrl-D or Cmd-D to select next
+            Ctrl/Cmd D  # repeat until all occurences are selected
+
+            # now you can either opprate in visual mode or 'esc' to command mode.
+            # for example, in normal mode:
+            esc         # escape to command mode
+            b           # jump back to beginning of word
+            dw          # delete word  (or cw to change word)
+            i           # insert
+            bar         # type new word
+
+            # Note, instead of Ctrl-D to select next occurence, you can
+            # use Ctrl-Shift-L to select all occurences.
+
+
 
