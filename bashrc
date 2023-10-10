@@ -31,6 +31,11 @@ git_branch() {
     git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
+dusort() {
+    dir=${@:-.}
+    du -k $dir | sort -nr | head -20
+}
+
 # new gnome-terminal on ubuntu 22.04, no longer reports lines x cols when
 # resizing so here I create the function to set it in the title
 set_window_title() {
@@ -39,6 +44,10 @@ set_window_title() {
     echo -en "\033]0;(${LINES}x${COLUMNS}) $(pwd | sed -e "s;^$HOME;~;")\a"
 }
 export PROMPT_COMMAND=set_window_title
+
+# add current dir to path - security risk... eh
+#export PATH=.:$PATH
+#export PGPASSFILE=$HOME/.pgpass
 
 # -------------------------------
 # PS1 command prompt
@@ -80,12 +89,27 @@ alias darc='./darc'
 # -------------------------------
 
 if [ "$OSTYPE" = 'darwin'* ]; then
-    BREW_HOME=$(brew --prefix)
-    export PATH="$BREW_HOME/opt/curl/bin:$PATH"
-
-    # https://github.com/fabiomaia/linuxify
-    if [ -f ~/.linuxify ]; then
-        . ~/.linuxify
-    fi
+    source ~/.bashrc-mrj-mac
 fi
 
+
+# add my stuff
+#source ~/.bashrc-mrj
+
+# ----- python/pyenv stuff ---------
+# This adds the pyenv executable to PATH and enables the pyenv "python family of commands" shims
+export PYENV_ROOT=/usr/local/var/pyenv
+#export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+#eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+
+#This one is NOT from the pyenv init command...it is from the pyenv-virtualenv docs.
+eval "$(pyenv virtualenv-init -)"
+# ----------------------------------
+
+# ----- npm/nvm/node stuff ---------
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# ----------------------------------

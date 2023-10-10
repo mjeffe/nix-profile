@@ -41,4 +41,5 @@ export PATH="/Users/mjeffery/Library/Python/3.10/bin:$PATH"
 # Which I did, and included the eval line here
 eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
 
+alias espeak='say'
 
