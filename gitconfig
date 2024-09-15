@@ -39,13 +39,15 @@
 	name = Matt Jeffery
 
 # include directory specific git configs
-[includeIf "gitdir:~/src/mrj"]
+[includeIf "gitdir:~/src/mrj/"]
     path = ~/src/mrj/.gitconfig
-[includeIf "gitdir:~/src/mrgh"]
+[includeIf "gitdir:~/src/mrgh/"]
     path = ~/src/mrgh/.gitconfig
-[includeIf "gitdir:~/src/arc"]
+[includeIf "gitdir:~/src/arc/"]
     path = ~/src/arc/.gitconfig
-[includeIf "gitdir:~/src/amarki"]
+[includeIf "gitdir:~/src/amarki/"]
     path = ~/src/amarki/.gitconfig
-[includeIf "gitdir:~/src/mrgh"]
+[includeIf "gitdir:~/src/ren/"]
     path = ~/src/ren/.gitconfig
+[init]
+	defaultBranch = main
