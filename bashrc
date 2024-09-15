@@ -51,6 +51,7 @@ export PROMPT_COMMAND=set_window_title
 
 # -------------------------------
 # PS1 command prompt
+# a very cool bash prompt generator: https://robotmoon.com/bash-prompt-generator/
 # -------------------------------
 
 #export PS1=‘[\u@\h:\w]$ ’
