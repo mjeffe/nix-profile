@@ -157,7 +157,9 @@ syntax on
 hi clear SignColumn
 let g:loaded_matchparen=1
 runtime macros/matchit.vim
-helptags ~/.vim/doc
+if isdirectory(expand('~/.vim/doc'))
+    helptags ~/.vim/doc
+endif
 
 " folding
 set foldmethod=syntax

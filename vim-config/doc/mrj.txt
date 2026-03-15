@@ -1,0 +1,258 @@
+*mrj.txt* Matt's VIM help docs
+
+ __  __ ____     _ 
+|  \/  |  _ \   | |
+| |\/| | |_) |  | |
+| |  | |  _ < |_| |
+|_|  |_|_| \_\___/ 
+                   
+Matt's own personal VIM help file
+
+====================================================================
+CONTENTS                                                       *Mrj*
+
+    1. Folding ....................... |MrjFolding|
+    2. IDE ........................... |MrjIDE|
+    3. vim-plug ...................... |MrjVimPlug|
+    4. Git ........................... |MrjGit|
+    5. Spell Checking ................ |MrjSpellChecking|
+    6. Vim Tricks .................... |MrjTricks|
+    7. VSCode & Vim Tricks ............|MrjVSCodeTricks|
+
+
+====================================================================
+Section: Folding                                      *MrjFolding*
+
+    zf{motion} or {Visual}zf   
+        - create a fold
+    zo  - open fold
+    zc  - close fold
+    za  - toggle folding 1 level (open if closed, close and enable if open)
+    zA  - toggle folding all levels
+    zM  - fold everything 
+    zR  - unfold everything
+
+====================================================================
+Section: IDE                                          *MrjIDE*
+
+Set up a bash alias to invoke VIM in IDE mode:
+
+    alias vide='VIM_IDE=1 vim'
+
+Cheat sheet when running as IDE:
+
+    Ctrl-n   open/close NERDTree (see key binding below)
+    Ctrl-ww  cycle the cursor between windows (NERDTree view on left and open editor)
+    <Enter>  open file - replace editor window with new file
+    t        open file in new tab - as active window
+    T        open file in new tab - keep NERDTree window active
+    gt       cycle between open tabs
+    :tabs    list all open tabs
+    <shift>mouseover/mouseclick Used to do normal copy and paste when mouse is enabled
+
+    ctags:
+    Ctrl-]   jump to first definition of tag under cursor
+    Ctrl-^   jump back to previous edit position
+    Ctrl-T   pop the tag stack (jump back up the path you just descended)
+    g]       to list all entries for the tag under cursor
+    :tag A.. jump to tag, but tab will list all tags begining with A...
+    :tags    list the tag stack
+
+
+====================================================================
+Section: vim-plug                                      *MrjVimPlug*
+
+Use vim-plug to manage vim plugins. Note that plugins are only
+loaded when VIM is invoked in IDE mode. See |MrjIDE|.
+
+To install a plugin, add a Plug line to ~/.vimrc between the
+plug#begin/end lines then run:
+    :PlugInstall
+
+Cheat Sheet:
+    :PlugInstall    - install plugins
+    :PlugUpdate     - update plugins
+    :PlugClean      - remove unlisted plugins
+    :PlugStatus     - check the status of plugins
+    :PlugDiff       - examine changes from the previous update
+    
+see https://github.com/junegunn/vim-plug for more details
+
+====================================================================
+Section: Git                                           *MrjGit*
+
+While not actually VIM, this is a really nice place to keep my git notes and
+cheatsheets.  The following is my git cheat sheet.
+
+NOTE: this is good, but extensive documentation: https://git-scm.com/doc
+
+log:
+    Single line view of git log
+
+        git log --oneline
+
+    Show which files were modified for each commit
+
+        git log --stat
+        
+    Show the changes made during the last two commits for file foo
+
+        git log -p -2 foo
+
+    Not really log, but...
+    Show the url that the local git repository was originally cloned from
+
+        git remote show origin
+
+diff:
+    Show changes made during a given commit
+
+        git show COMMIT
+        git show COMMIT FILE
+        git diff COMMIT^ COMMIT         # this one shows the diff between the commit and it's ancestor
+
+    NOTE: gitk is a really helpful gui tool for examining diffs and branching!
+
+        sudo apt install gitk
+        gitk --all
+
+syncing:
+    I have found most folks recommend pulling the origin with --rebase rather
+    than merging. You can do it with a git pull
+
+        git pull --rebase
+
+    or you can do it by fetching then rebasing
+
+        # fetch origin/master
+        git fetch
+        git log master..origin/master   # examine commits on origin/master that are not on my local master
+        git log origin/master..master   # examine commits on my local master that are not on the remote origin/master
+        git merge-base master origin/master  # find base - the place where master diverged from origin/master
+        git rebase 
+   
+    This causes confilct resolving to now be on a per commit bassis, not
+    everything-at-once. So to get the next batch of conflicts (if you have any) you
+    will have to use
+
+        git rebase --continue
+
+    Set a global config option to always use --rebase when pulling
+
+        git config --global branch.autosetuprebase always
+
+    NOTE: gitk is a really helpful gui tool for examining diffs and branching!
+
+        sudo apt install gitk
+        gitk --all
+
+reverting:
+    To revert the changes in one, unstaged file
+
+        git checkout -- <file>
+
+    You can also checkout a particluar version of a file
+
+        git checkout v1.2.3 -- file         # tag v1.2.3
+        git checkout stable -- file         # stable branch
+        git checkout origin/master -- file  # upstream master
+        git checkout HEAD -- file           # the version from the most recent commit
+        git checkout HEAD^ -- file          # the version before the most recent commit
+
+unstaging:
+    To unstage a file, use the command suggested by git status
+
+        git reset <filepath>
+
+====================================================================
+Section: Spell Checking                               *MrjSpellChecking*
+
+    :set spell
+    :setlocal spell
+    :set nospell
+    ]s  - move to next spelling error
+    [s  - move to previous spelling error
+    z=  - show spelling suggestions (select number)
+    zg  - add word to personal dictionary
+    zw  - flag dictionary word as bad
+
+====================================================================
+Section: Tricks                                       *MrjTricks*
+
+    Add a colum of sequential numbers
+        Select the column using Ctrl-v, then type :
+        This will automatically add a range, which you want to backspace, then type
+
+            :let i=1 | '<,'>g/^/ s//\=i . " "/ | let i+=1
+
+    Format JSON to pretty print
+
+        :%!python -m json.tool
+
+    Sort selection
+        Select the section using Shift + V
+        Then invoke sort
+
+            :sort
+
+    Toggle accent on vowels
+        I have the '-' key mapped to a function in ~/.vimrc that will toggle
+        the accent mark on vowels in command mode. Place the cursor over the
+        vowel, then use '-'. See ~/.vimrc for details.
+
+        Note, Vim has more extensive accent support. See help :digraphs
+
+    Replace all occurences of a word
+        The most powerful method is using sed like regex search and replace.
+
+            :'a,. s/foo/bar/g
+
+        But another technique which can be really nice is to use 'cgn' with '.'
+
+            /foo    # search for word
+            cgn     # c = change, gn = find next match with last search pattern
+            bar     # type the new word
+            .       # repeat
+            .       # repeat again, ...
+
+    Change case
+        Use the ~ (toggle case), U (uppercase) and u (lowercase) commands to
+        change the case of selections.
+
+        Using visual mode:
+            Ctrl-v  # make selection
+            # then
+            ~       # toggle case
+            U       # uppercase everything
+            u       # lowercase everything
+
+        Using the g command:
+            g~{motion}  # toggle case
+            gU{motion}  # uppercase
+            gu{motion}  # lowercase
+
+====================================================================
+Section: VSCodeTricks                           *MrjVSCodeTricks*
+
+    Multi Cursor Replace
+        Replace all occurrences of a given work with another word. Say
+        we want to replace all 'foo' with 'bar'.
+
+            viw         # if your cursor is on the word
+            # OR
+            /foo        # search for the word
+
+            Ctrl/Cmd D  # linux/mac Ctrl-D or Cmd-D to select next
+            Ctrl/Cmd D  # repeat until all occurences are selected
+
+            # now you can either opprate in visual mode or 'esc' to command mode.
+            # for example, in normal mode:
+            esc         # escape to command mode
+            b           # jump back to beginning of word
+            dw          # delete word  (or cw to change word)
+            i           # insert
+            bar         # type new word
+
+            # Note, instead of Ctrl-D to select next occurence, you can
+            # use Ctrl-Shift-L to select all occurences.
+

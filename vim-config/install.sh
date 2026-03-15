@@ -55,9 +55,14 @@ curl -fsSL "$BASE_URL/vimrc-$PROFILE" -o "$HOME/.vimrc"
 echo "Installing color scheme..."
 curl -fsSL "$BASE_URL/mrj.vim" -o "$HOME/.vim/colors/mrj.vim"
 
+# install help docs
+echo "Installing help docs..."
+mkdir -p "$HOME/.vim/doc"
+curl -fsSL "$BASE_URL/doc/mrj.txt" -o "$HOME/.vim/doc/mrj.txt"
+
 # install plugins
 echo "Installing vim plugins..."
-VIM_IDE=1 vim +PlugInstall +qall
+VIM_IDE=1 vim +PlugInstall +qall </dev/tty
 
 echo ""
 echo "Done! Add this alias to your ~/.bashrc if you haven't already:"
