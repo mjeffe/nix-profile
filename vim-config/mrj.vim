@@ -13,8 +13,8 @@ let colors_name = "mrj"
 hi Comment      ctermfg=Brown
 hi Constant     NONE
 hi Identifier   NONE
-hi Statement    ctermfg=Blue
-  hi Operator     ctermfg=Blue
+hi Statement    ctermfg=Cyan
+  hi Operator     ctermfg=Cyan
 hi PreProc      ctermfg=Magenta
 hi Type         ctermfg=DarkGreen
 hi Special      NONE
