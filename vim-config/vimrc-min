@@ -1,0 +1,154 @@
+" --------------------------------------------------------------------------------
+" Matt's .vimrc (minimal)
+"
+" Dual-mode config: plain vim for normal editing, IDE mode with plugins.
+" Add this alias to your ~/.bashrc:
+"   alias vide='VIM_IDE=1 vim'
+"
+" Then invoke `vim` for normal use, or `vide` for IDE mode with plugins.
+"
+" Setup on a new system:
+"   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"   mkdir -p ~/.vim/{swap,backup}
+"   cp .vim/colors/mrj.vim ~/.vim/colors/
+"   vide +PlugInstall +qall
+" --------------------------------------------------------------------------------
+
+set nocompatible
+filetype off
+
+" --- IDE mode (plugins via vim-plug) ------------------------------------------
+
+if $VIM_IDE == '1'
+    call plug#begin('~/.vim/plugged')
+
+    " file tree browser
+    Plug 'scrooloose/nerdtree'
+    Plug 'jistr/vim-nerdtree-tabs'
+
+    " language error checking
+    Plug 'vim-syntastic/syntastic'
+
+    " fuzzy file finder (Ctrl-P)
+    Plug 'ctrlpvim/ctrlp.vim'
+
+    " Vue.js syntax highlighting (supports Vue 2/3, TypeScript, scss, etc.)
+    Plug 'leafOfTree/vim-vue-plugin'
+
+    call plug#end()
+    filetype plugin indent on
+
+
+    " --- Plugin-specific settings ---------------------------------------------
+
+    " ----- NERDTree / nerdtree-tabs -----
+    nmap <C-n> :NERDTreeTabsToggle<CR>
+    let g:nerdtree_tabs_open_on_console_startup = 0
+    let NERDTreeShowBookmarks = 1
+
+    " ----- syntastic -----
+    let g:syntastic_error_symbol = '✘'
+    let g:syntastic_warning_symbol = "▲"
+    augroup mySyntastic
+        au!
+        au FileType tex let b:syntastic_mode = "passive"
+    augroup END
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+
+    let g:syntastic_perl_checkers = ['perl']
+    let g:syntastic_enable_perl_checker = 1
+
+    let g:syntastic_python_python_exec = 'python3'
+    let g:syntastic_python_checkers = ['python']
+
+    let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
+
+    " ----- ctrlp -----
+    let g:ctrlp_match_window = 'order:ttb,min:1,max:30,results:30'
+    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_by_filename = 1
+    let g:ctrlp_regexp = 1
+    let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\.git$\|\.svn$\|node_modules$\|vendor$\|log$\|tmp$',
+      \ 'file': '\.exe$\|\.so$\|\.dat$\|\.jpg$\|\.jpeg$\|\.png\|\.pdf$'
+      \ }
+
+    " --- IDE-only general settings ---
+    set number
+    set mouse=a
+
+    " F6 to toggle line numbers + NERDTree (for copy/paste of multiline text)
+    map <F6> :set nonumber!<CR>:NERDTreeTabsToggle<CR>
+endif
+
+" --- General settings ---------------------------------------------------------
+
+filetype plugin indent on
+set backspace=indent,eol,start
+set ruler
+set showcmd
+set showmode
+set incsearch
+set encoding=utf-8
+
+" display tabs and trailing spaces
+set list
+set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
+
+" put swap/backup files under ~/.vim
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+
+" indentation
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set pastetoggle=<F12>
+
+" syntax and colors
+colorscheme mrj
+syntax on
+hi clear SignColumn
+let g:loaded_matchparen=1
+if filereadable($VIMRUNTIME . '/macros/matchit.vim')
+    runtime macros/matchit.vim
+endif
+
+" folding
+set foldmethod=syntax
+set foldnestmax=20
+set foldlevel=1
+set foldlevelstart=99
+
+" jump to last position when reopening a file
+au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'\"" | endif
+
+" grep word under cursor with F4, navigate results with :cn (next) and :cp (prev)
+map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=dist --exclude-dir=build --exclude='*.min.*' --exclude='*.map' --exclude='*.swp' . -e " . expand("<cword>") . " " <bar> cwindow<CR>
+
+" commands for soft wrapping
+command! -nargs=* Wrap set wrap linebreak nolist showbreak=…
+command! -nargs=* NoWrap set nowrap nolinebreak
+
+" python3
+let g:pymode_python = 'python3'
+
+" php folding
+let g:php_folding=2
+
+" --- FileType-specific settings -----------------------------------------------
+
+au! FileType c,sql set formatoptions+=ro
+au FileType make set noexpandtab shiftwidth=8 tabstop=8
+
+" --- Spell checking -----------------------------------------------------------
+
+set spelllang=en_us
+autocmd filetype svn,*commit* setlocal spell
+autocmd filetype git,*commit* setlocal spell
+
