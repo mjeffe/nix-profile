@@ -14,7 +14,7 @@ hi Comment      ctermfg=Brown
 hi Constant     NONE
 hi Identifier   NONE
 hi Statement    cterm=NONE ctermfg=DarkCyan
-  hi Operator     cterm=NONE ctermfg=DarkCyan
+  hi Operator     NONE
 hi PreProc      cterm=NONE ctermfg=DarkMagenta
 hi Type         ctermfg=DarkGreen
 hi Special      NONE
