@@ -62,7 +62,7 @@ curl -fsSL "$BASE_URL/doc/mrj.txt" -o "$HOME/.vim/doc/mrj.txt"
 
 # install plugins
 echo "Installing vim plugins..."
-VIM_IDE=1 vim +PlugInstall +qall </dev/tty
+VIM_IDE=1 vim -es -u ~/.vimrc +PlugInstall +qall
 
 echo ""
 echo "Done! Add this alias to your ~/.bashrc if you haven't already:"
