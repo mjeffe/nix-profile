@@ -45,6 +45,16 @@ subagent({ chain: [
 ] })
 ```
 
+### Scoped parallel search
+When a single librarian reports the search space is too large, split by directory or module and run parallel librarians:
+```
+subagent({ tasks: [
+  { agent: "librarian", task: "Find all process.env usage in src/api/" },
+  { agent: "librarian", task: "Find all process.env usage in src/services/" },
+  { agent: "librarian", task: "Find all process.env usage in src/utils/" }
+] })
+```
+
 ## Decision Guide
 
 | Task type | Agent | Why |
@@ -59,6 +69,7 @@ subagent({ chain: [
 | "Audit all error handling in X" | `librarian` | Pattern finding across codebase |
 | Serial discovery (each find determines next search) | Main agent | Subagent round-trip overhead > benefit |
 | Broad parallel search (many independent files) | `librarian` | Offloads context, parallel reads |
+| Librarian reports scope too large (>50 files) | Split by dir → parallel `librarian`s | Partition the work, aggregate results |
 | Before merging a PR | `review` | Catch issues early |
 | Security-sensitive code | Main agent | Never delegate auth/crypto |
 | Production config, user data handling | Main agent | Never delegate sensitive changes |
