@@ -12,7 +12,7 @@ Delegate tasks to specialized subagents with isolated context and model selectio
 | Agent | Model | Thinking | Best for |
 |-------|-------|----------|----------|
 | `rush` | V4 Flash | off | Fast cheap tasks: formatting, docstrings, boilerplate, lint fixes, simple refactors, test stubs, single-file changes |
-| `oracle` | V4 Pro | high | Complex reasoning: architecture design, debugging hard problems, evaluating tradeoffs, planning multi-step refactors |
+| `oracle` | GPT-5.5 | high | Complex reasoning: architecture design, debugging hard problems, evaluating tradeoffs, planning multi-step refactors |
 | `librarian` | V4 Flash | off | Research: find where things are used, audit patterns, gather context across many files, answer "how does X work?" |
 | `review` | V3.2 | — | Code review: find bugs, logic errors, security issues, edge cases before merging |
 
@@ -57,8 +57,11 @@ subagent({ chain: [
 | Before a big refactor | `oracle` | Understand implications first |
 | "Where is X used?" | `librarian` | Search-and-report, no editing |
 | "Audit all error handling in X" | `librarian` | Pattern finding across codebase |
+| Serial discovery (each find determines next search) | Main agent | Subagent round-trip overhead > benefit |
+| Broad parallel search (many independent files) | `librarian` | Offloads context, parallel reads |
 | Before merging a PR | `review` | Catch issues early |
 | Security-sensitive code | Main agent | Never delegate auth/crypto |
+| Production config, user data handling | Main agent | Never delegate sensitive changes |
 
 ## Important
 

@@ -16,25 +16,6 @@ if ! command -v pi &>/dev/null; then
     curl -fsSL https://pi.dev/install.sh | sh
 fi
 
-# -- Find pi's installed examples -----------------------------
-PI_EXAMPLES=""
-# npm global install
-for candidate in \
-    "$(npm root -g 2>/dev/null || true)/@earendil-works/pi-coding-agent/examples" \
-    "$(dirname "$(which pi 2>/dev/null || echo /none)")/../lib/node_modules/@earendil-works/pi-coding-agent/examples" \
-    /usr/local/lib/node_modules/@earendil-works/pi-coding-agent/examples; do
-    if [ -d "${candidate}/extensions/subagent" ]; then
-        PI_EXAMPLES="${candidate}"
-        break
-    fi
-done
-
-if [ -z "${PI_EXAMPLES}" ]; then
-    echo "ERROR: Could not find pi's examples directory. Is pi installed?"
-    exit 1
-fi
-echo "    pi examples: ${PI_EXAMPLES}"
-
 # -- Symlink helper -------------------------------------------
 link() {
     local src="$1" dst="$2"
@@ -48,29 +29,11 @@ link() {
     echo "    ln  ${dst}"
 }
 
-# -- Subagent extension (patched for thinkingLevel) -----------
+# -- Subagent extension (forked from pi examples, patched for thinkingLevel) ----------
 EXT_DIR="${PI_AGENT}/extensions/subagent"
 mkdir -p "${EXT_DIR}"
-
-# Copy stock extension as base, then patch
-cp "${PI_EXAMPLES}/extensions/subagent/index.ts"  "${EXT_DIR}/index.ts"
-cp "${PI_EXAMPLES}/extensions/subagent/agents.ts" "${EXT_DIR}/agents.ts"
-
-# Patch index.ts: pass --thinking flag when agent specifies thinkingLevel
-if ! grep -q 'thinkingLevel.*args.push.*--thinking' "${EXT_DIR}/index.ts"; then
-    sed -i '/if (agent.tools && agent.tools.length > 0) args.push("--tools", agent.tools.join(","));/i\
-\tif (agent.thinkingLevel) args.push("--thinking", agent.thinkingLevel);' "${EXT_DIR}/index.ts"
-    echo "    patched index.ts (+thinkingLevel)"
-fi
-
-# Patch agents.ts: add thinkingLevel to interface + parse from frontmatter
-if ! grep -q 'thinkingLevel?:' "${EXT_DIR}/agents.ts"; then
-    sed -i '/description: string;/a\
-\tthinkingLevel?: string;' "${EXT_DIR}/agents.ts"
-    sed -i '/model: frontmatter.model,/a\
-\t\t\tthinkingLevel: frontmatter.thinkingLevel || frontmatter.thinking,' "${EXT_DIR}/agents.ts"
-    echo "    patched agents.ts (+thinkingLevel)"
-fi
+link "${HERE}/extensions/subagent/index.ts"  "${EXT_DIR}/index.ts"
+link "${HERE}/extensions/subagent/agents.ts" "${EXT_DIR}/agents.ts"
 
 # -- Agents ---------------------------------------------------
 mkdir -p "${PI_AGENT}/agents"
