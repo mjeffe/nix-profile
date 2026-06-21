@@ -83,5 +83,8 @@ done
 mkdir -p "${PI_AGENT}/skills/subagents"
 link "${HERE}/skills/subagents/SKILL.md" "${PI_AGENT}/skills/subagents/SKILL.md"
 
+# -- Keybindings -----------------------------------------------
+link "${HERE}/keybindings.json" "${PI_AGENT}/keybindings.json"
+
 echo ""
 echo "Done. Restart pi or run /reload to pick up changes."
