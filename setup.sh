@@ -116,6 +116,19 @@ else
 fi
 
 # ------------
+# pi coding agent
+# ------------
+echo $this: installing pi coding agent subagents
+
+PI_DIR="$BASEDIR/mrj/nix-profile/coding-agents/pi"
+if test -f "$PI_DIR/install.sh"; then
+    bash "$PI_DIR/install.sh"
+else
+    echo "$this:   dir: $PI_DIR"
+    echo "$this:   unable to find pi subagent installer, skipping..."
+fi
+
+# ------------
 # compile tools
 # ------------
 
