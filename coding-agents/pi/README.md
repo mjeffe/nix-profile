@@ -2,6 +2,22 @@
 
 Multi-model delegation system for [pi](https://github.com/badlogic/pi-coding-agent), modeled after [Amp](https://ampcode.com)'s subagent design.
 
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/coding-agents/pi/install.sh | bash
+```
+
+Or clone and run locally:
+
+```bash
+git clone https://github.com/mjeffe/nix-profile.git
+cd nix-profile/coding-agents/pi
+./install.sh
+```
+
+Idempotent — safe to re-run. Updates in place when re-run from curl (git pull), or picks up local changes when run from a clone.
+
 ## Concept
 
 The main agent (DeepSeek V4 Pro, high thinking) delegates tasks to specialized subagents running cheaper/faster models or the same model with different system prompts and thinking levels. Each subagent runs in an isolated `pi` process with its own model, tools, and context window.

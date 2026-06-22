@@ -4,11 +4,27 @@ set -euo pipefail
 # Pi Subagents — multi-model delegation system
 # Installs pi (if needed), sets up the subagent extension with thinkingLevel support,
 # and symlinks agent definitions + skills into ~/.pi/agent/
+#
+# Install: curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/coding-agents/pi/install.sh | bash
 
-HERE="$(cd "$(dirname "$0")" && pwd)"
 PI_AGENT="${HOME}/.pi/agent"
+REPO_URL="https://github.com/mjeffe/nix-profile.git"
+REPO_DIR="${PI_AGENT}/repo"
 
-echo "==> Installing pi subagents from: ${HERE}"
+# -- Determine source: local clone vs. curl pipe ---------------
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd 2>/dev/null || true)"
+if [ -n "${SCRIPT_DIR}" ] && [ -f "${SCRIPT_DIR}/extensions/subagent/index.ts" ]; then
+    HERE="${SCRIPT_DIR}"
+    echo "==> Installing pi subagents from local clone: ${HERE}"
+else
+    echo "==> Cloning pi subagents from ${REPO_URL}..."
+    if [ -d "${REPO_DIR}/.git" ]; then
+        git -C "${REPO_DIR}" pull --ff-only
+    else
+        git clone --depth 1 "${REPO_URL}" "${REPO_DIR}"
+    fi
+    HERE="${REPO_DIR}/coding-agents/pi"
+fi
 
 # -- Install pi -----------------------------------------------
 if ! command -v pi &>/dev/null; then
