@@ -1,5 +1,7 @@
 # /etc/systemd/system/mss-clamp.service
 #
+# Works on Ubuntu 22.04
+#
 # Fix stalled downloads in Docker containers when on a VPN (e.g. Surfshark
 # WireGuard, tunnel MTU 1280).
 #
