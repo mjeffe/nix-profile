@@ -1,0 +1,40 @@
+# Template for one client's git settings: identity, ssh key, credential helpers.
+#
+# Installed as: nothing automatically. Copy it by hand to
+#   ~/src/<client>/.gitconfig (beside that client's repos, outside this
+#   repo) and keep only the blocks the client needs. Include it from
+#   ~/.gitconfig with:
+#
+#   [includeIf "gitdir:~/src/<client>/"]
+#       path = ~/src/<client>/.gitconfig
+#
+# Use only the blocks a client needs. Check what applies in a repo with:
+#   git config --show-origin --show-scope --list
+
+# Identity for commits to this client's repos.
+[user]
+	email = me@client.example
+
+# A dedicated ssh key per client. This ties the key to the directory, so you
+# need no "Host github-client" aliases in ~/.ssh/config, and clone URLs stay
+# exactly as the client gives them. -i keys are offered before ~/.ssh/config's.
+[core]
+	sshCommand = ssh -i ~/.ssh/client_ed25519 -o IdentitiesOnly=yes
+
+# Force a protocol for this client's host, whatever URL a README gives you:
+# ssh instead of https ...
+#[url "git@github.com:client-org/"]
+#	insteadOf = https://github.com/client-org/
+# ... or https instead of ssh (e.g. the client's network blocks port 22).
+#[url "https://bitbucket.org/client-org/"]
+#	insteadOf = git@bitbucket.org:client-org/
+
+# HTTPS credential helpers, scoped to one host (and path) so they never leak
+# to other remotes. AWS CodeCommit with this client's AWS profile:
+#[credential "https://git-codecommit.us-east-1.amazonaws.com"]
+#	helper = !aws codecommit --profile client --region us-east-1 credential-helper $@
+#	usehttppath = true
+# GitHub over HTTPS through the gh CLI:
+#[credential "https://github.com"]
+#	helper =
+#	helper = !gh auth git-credential

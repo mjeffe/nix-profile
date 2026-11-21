@@ -1,0 +1,29 @@
+#
+# Matt Jeffery's login profile
+#
+# install.sh symlinks this file to ~/.profile-mrj and sources that from
+# ~/.bash_profile, or from ~/.profile when there is no ~/.bash_profile.
+#
+# Reminder: bash reads ~/.bash_profile (or ~/.profile) for login shells and
+# ~/.bashrc only for interactive non-login shells. See INVOCATION in bash(1).
+#
+
+_prepend_path() {
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) [ -d "$1" ] && PATH="$1:$PATH" ;;
+    esac
+}
+_prepend_path "$HOME/.local/bin"
+_prepend_path "$HOME/bin"
+unset -f _prepend_path
+export PATH
+
+export EDITOR=vim
+export VISUAL=vim
+
+# Login shells on macOS (and anywhere ~/.profile does not source ~/.bashrc)
+# would otherwise skip the interactive config.
+if [ -n "$BASH_VERSION" ] && [ -z "$NIX_PROFILE_BASHRC_LOADED" ] && [ -r "$HOME/.bashrc" ]; then
+    case $- in *i*) . "$HOME/.bashrc" ;; esac
+fi

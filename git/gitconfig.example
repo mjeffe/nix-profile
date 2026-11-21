@@ -1,0 +1,27 @@
+# Template for ~/.gitconfig, this machine's own git config.
+#
+# Installed as: ~/.gitconfig. The git module copies this file there once,
+#   filling in the path placeholder in the include below, and only when
+#   ~/.gitconfig does not exist. If it exists, the module only adds the
+#   [include] block to its top. After that, edit ~/.gitconfig directly;
+#   it is per machine and never committed.
+#
+# `git config --global ...` (and tools like gh) write to ~/.gitconfig, which
+# is why it is not a symlink into this public repo. Settings below the
+# include override the shared ones.
+
+[include]
+	path = @NIX_PROFILE_DIR@/git/gitconfig
+
+# --- clients ------------------------------------------------------------------
+# One block per client directory under ~/src. Each client file sets that
+# client's identity, ssh key, and credential helpers. See
+# @NIX_PROFILE_DIR@/git/client.gitconfig.example
+#
+#[includeIf "gitdir:~/src/acme/"]
+#	path = ~/src/acme/.gitconfig
+#
+# For repos that live outside their client's directory, match on the remote
+# URL instead (git 2.36+):
+#[includeIf "hasconfig:remote.*.url:git@github.com:acme-corp/**"]
+#	path = ~/src/acme/.gitconfig

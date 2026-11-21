@@ -1,3 +1,15 @@
+# Shared git settings: behavior, aliases, default identity.
+#
+# Installed as: nothing. This file stays in the clone and is not copied or
+#   renamed. ~/.gitconfig loads it by path, from its first lines:
+#       [include]
+#           path = ~/src/mrj/nix-profile/git/gitconfig
+#   so a `git pull` in the clone updates every machine.
+#
+# Keep client names, credential helpers, and anything private out of this
+# public file. They go in ~/.gitconfig or ~/src/<client>/.gitconfig, which
+# come after this include and override it.
+
 [push]
 	default = simple
 [pull]
@@ -30,24 +42,19 @@
 [difftool]
 	prompt = false
 
-# these should/may be overridden in the directory specific .gitconfig
-[credential]
-	helper = !aws codecommit --profile default --region us-east-1 credential-helper $@
-	usehttppath = true
+# Default identity. Each client directory overrides it (see client.gitconfig.example).
 [user]
 	email = matt@mattjeffery.dev
 	name = Matt Jeffery
 
-# include directory specific git configs
+# Clone my repos anonymously over HTTPS (works before any ssh key exists on a
+# new box), but push over ssh.
+[url "git@github.com:mjeffe/"]
+	pushInsteadOf = https://github.com/mjeffe/
+
+# My own projects. Relative paths resolve next to this file.
 [includeIf "gitdir:~/src/mrj/"]
-    path = ~/src/mrj/.gitconfig
-[includeIf "gitdir:~/src/mrgh/"]
-    path = ~/src/mrgh/.gitconfig
-[includeIf "gitdir:~/src/arc/"]
-    path = ~/src/arc/.gitconfig
-[includeIf "gitdir:~/src/amarki/"]
-    path = ~/src/amarki/.gitconfig
-[includeIf "gitdir:~/src/ren/"]
-    path = ~/src/ren/.gitconfig
+	path = gitconfig-mrj
+
 [init]
 	defaultBranch = main

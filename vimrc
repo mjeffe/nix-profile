@@ -47,6 +47,10 @@ if exists("vim_as_ide") && vim_as_ide==1
     " Rainbow CSV - aids working with csv files
     Plugin 'mechatroner/rainbow_csv'
 
+    " AWS CloudFormation syntax checking and highlighting
+    " https://github.com/aws-cloudformation/cfn-lint
+    Plugin 'speshak/vim-cfn'
+
     call vundle#end()
     filetype plugin indent on           " required - turn on file type specific indening
     " --- Vundle end ------------------------------------------------------------
@@ -274,6 +278,13 @@ runtime macros/matchit.vim          " allow % to match html/xml tags
 "set matchpairs+=<:>
 
 helptags ~/.vim/doc                 " include user defined help doc
+
+" command to turn on settings helpful when editing documents with long lines.
+" invoke with :Wrap and :NoWrap
+" To insert the elipsis for showbreak, press ctrl-vu followed by the numeric code for elipsis: 2026.
+" source: http://vimcasts.org/episodes/soft-wrapping-text/
+command! -nargs=* Wrap set wrap linebreak nolist showbreak=…
+command! -nargs=* NoWrap set nowrap nolinebreak "list
 
 " use system clipboard (I've never tested this)
 "set clipboard=unnamed

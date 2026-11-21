@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# Block commits that look like they contain secrets. This repo is public.
+# install.sh enables it with: git config core.hooksPath .githooks
+#
+# Uses gitleaks when installed (https://github.com/gitleaks/gitleaks), and
+# otherwise a few regexes over the added lines. Bypass a false positive with
+# `git commit --no-verify` after checking it.
+
+set -euo pipefail
+
+if command -v gitleaks >/dev/null; then
+    exec gitleaks git --staged --redact --no-banner
+fi
+
+patterns=(
+    '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+    'AKIA[0-9A-Z]{16}'                           # AWS access key id
+    'gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{50,}'
+    'xox[abprs]-[A-Za-z0-9-]{10,}'               # Slack
+    'sk-[A-Za-z0-9_-]{20,}'                      # OpenAI/Anthropic-style keys
+    '(KEY|TOKEN|SECRET|PASSWORD|PASSWD)[A-Z_]*=["'"'"']?[A-Za-z0-9/+_.-]{16,}'
+)
+
+added=$(git diff --cached --no-color -U0 --diff-filter=AM | grep '^+[^+]' || true)
+status=0
+for p in "${patterns[@]}"; do
+    if hits=$(grep -En -- "$p" <<<"$added"); then
+        echo "pre-commit: possible secret matching /$p/:" >&2
+        sed -E 's/(.{12}).*/\1…/' <<<"$hits" >&2
+        status=1
+    fi
+done
+
+if [ "$status" -ne 0 ]; then
+    echo "pre-commit: move secrets to ~/.bashrc.local or another uncommitted file." >&2
+fi
+exit "$status"

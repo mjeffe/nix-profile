@@ -1,0 +1,28 @@
+# ~/.ssh/config: an example layout. Not installed; ssh keys and hosts are
+# per machine and never belong in this repo.
+#
+# Keep one file per client in ~/.ssh/config.d/, so adding or retiring a client
+# means adding or deleting one file. Include must come before any Host block.
+
+Include config.d/*.conf
+
+Host *
+    ServerAliveInterval 240
+    IdentitiesOnly yes
+    AddressFamily inet
+
+# ~/.ssh/config.d/acme.conf
+#
+#   Host acme-bastion
+#       Hostname bastion.acme.example
+#       User me
+#       IdentityFile ~/.ssh/acme_ed25519
+#
+#   Host acme-app
+#       Hostname app.internal.acme.example
+#       User ubuntu
+#       IdentityFile ~/.ssh/acme_ed25519
+#       ProxyJump acme-bastion
+#
+# For git hosts, prefer core.sshCommand in the client's gitconfig (see
+# git/client.gitconfig.example) over Host aliases such as "github-acme".

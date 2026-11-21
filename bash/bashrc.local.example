@@ -1,0 +1,12 @@
+# ~/.bashrc.local: machine-specific settings and secrets.
+#
+# install.sh copies this template to ~/.bashrc.local (mode 600) when the file
+# does not exist. It is never committed. Put API keys, client-specific
+# aliases, and anything else you would not publish here, or in
+# ~/.bashrc.d/*.sh.
+
+# API keys
+#export CONTEXT7_API_KEY=...
+
+# Current directory in PATH: convenient, but a security risk. Opt in per machine.
+#export PATH=".:$PATH"

@@ -1,0 +1,24 @@
+#
+# Matt Jeffery's bashrc loader
+#
+# install.sh symlinks this file to ~/.bashrc-mrj and sources that from the
+# distribution's default ~/.bashrc. It loads, in order:
+#
+#   <repo>/bash/bashrc.d/*.sh   shared snippets (committed, public)
+#   ~/.bashrc.d/*.sh            machine-specific snippets (never committed)
+#   ~/.bashrc.local             machine-specific settings and secrets (never committed)
+#
+# To retire something, delete its snippet from bashrc.d/.
+#
+
+# readlink -f resolves the ~/.bashrc-mrj symlink back to the repo
+# (macOS has it since 12.3).
+NIX_PROFILE_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+export NIX_PROFILE_DIR
+
+for _f in "$NIX_PROFILE_DIR"/bash/bashrc.d/*.sh "$HOME"/.bashrc.d/*.sh "$HOME"/.bashrc.local; do
+    [ -r "$_f" ] && . "$_f"
+done
+unset _f
+
+NIX_PROFILE_BASHRC_LOADED=1

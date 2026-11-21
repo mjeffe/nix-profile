@@ -1,0 +1,10 @@
+# Identity for my own projects under ~/src/mrj/.
+#
+# Installed as: nothing. Stays in the clone; git/gitconfig includes it for
+#   repos under ~/src/mrj/ (a relative include path resolves next to the
+#   including file).
+
+[user]
+	email = mjeffe@yahoo.com
+	name = Matt Jeffery
+
