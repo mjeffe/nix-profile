@@ -18,12 +18,16 @@
 #   NIX_PROFILE_DIR    where to clone   (default: ~/src/mrj/nix-profile)
 #   NIX_PROFILE_REPO   repo to clone    (default: https://github.com/mjeffe/nix-profile.git)
 #   NIX_PROFILE_REF    branch           (default: master)
+#   NIX_PROFILE_PRIVATE_REPO  private companion repo for the private module
+#                             (default: https://github.com/mjeffe/nix-profile-private.git)
+#   NIX_PROFILE_PRIVATE_DIR   where to clone it (default: next to this clone)
 #
 
 set -euo pipefail
 
 DEFAULT_MODULES=(bash git vim agents)
 ALL_MODULES=(bash git vim agents pi desktop)
+MODULES=("${ALL_MODULES[@]}" private)    # private is never part of "all"
 
 usage() {
     cat <<EOF
@@ -36,6 +40,8 @@ modules (default: ${DEFAULT_MODULES[*]}):
   agents   ~/AGENTS.md
   pi       pi coding agent with subagents (coding-agents/pi)
   desktop  X resources, conky (Linux desktops)
+  private  clone a private companion repo and run its install.sh
+           (see private.example/; log in first with: gh auth login && gh auth setup-git)
 EOF
 }
 
@@ -185,6 +191,25 @@ install_desktop() {
     echo "    optional: see $DIR/desktop/mss-clamp.service for the WireGuard/docker MSS fix"
 }
 
+install_private() {
+    say "private"
+    local repo=${NIX_PROFILE_PRIVATE_REPO:-https://github.com/mjeffe/nix-profile-private.git}
+    local dir=${NIX_PROFILE_PRIVATE_DIR:-$(dirname "$DIR")/nix-profile-private}
+    if [ -d "$dir/.git" ]; then
+        git -C "$dir" pull --ff-only || warn "could not fast-forward $dir; using it as is"
+    # never wait on a password prompt; this may be running under curl | bash
+    elif ! GIT_TERMINAL_PROMPT=0 git clone --quiet "$repo" "$dir"; then
+        warn "could not clone $repo"
+        warn "log in first (gh auth login && gh auth setup-git, or add an ssh key), then run: $DIR/install.sh private"
+        return 0
+    fi
+    if [ -f "$dir/install.sh" ]; then
+        bash "$dir/install.sh"
+    else
+        warn "$dir has no install.sh; see $DIR/private.example/"
+    fi
+}
+
 # --- main ---------------------------------------------------------------------------
 
 modules=("$@")
@@ -195,7 +220,7 @@ for m in "${modules[@]}"; do
     case $m in
         -h | --help) usage; exit 0 ;;
     esac
-    case " ${ALL_MODULES[*]} " in
+    case " ${MODULES[*]} " in
         *" $m "*) ;;
         *) usage >&2; echo "unknown module: $m" >&2; exit 1 ;;
     esac

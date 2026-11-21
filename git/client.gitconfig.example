@@ -8,7 +8,8 @@
 #   [includeIf "gitdir:~/src/<client>/"]
 #       path = ~/src/<client>/.gitconfig
 #
-# Use only the blocks a client needs. Check what applies in a repo with:
+# When a client only needs a stock recipe from git/clients/, include that
+# recipe directly instead. Check what applies in a repo with:
 #   git config --show-origin --show-scope --list
 
 # Identity for commits to this client's repos.
@@ -29,8 +30,10 @@
 #[url "https://bitbucket.org/client-org/"]
 #	insteadOf = git@bitbucket.org:client-org/
 
-# HTTPS credential helpers, scoped to one host (and path) so they never leak
-# to other remotes. AWS CodeCommit with this client's AWS profile:
+# HTTPS credential helpers, scoped to one host so they never leak to other
+# remotes. For AWS CodeCommit with the "default" profile, skip this file and
+# include the recipe git/clients/aws-codecommit.gitconfig instead. With a
+# client-specific AWS profile:
 #[credential "https://git-codecommit.us-east-1.amazonaws.com"]
 #	helper = !aws codecommit --profile client --region us-east-1 credential-helper $@
 #	usehttppath = true

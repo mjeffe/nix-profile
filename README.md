@@ -22,6 +22,7 @@ To pick modules, pass them after `-s --`, or run `./install.sh [module...|all]` 
 | `agents` (default) | `~/AGENTS.md`, baseline guidance for coding agents |
 | `pi` | the pi coding agent and subagents ([coding-agents/pi](coding-agents/pi/README.md)) |
 | `desktop` | X resources and conky |
+| `private` | clones a private companion repo and runs its `install.sh` (see [Private settings](#private-settings)); never part of `all` |
 
 Re-running is safe. Any file it replaces is moved to `<file>.bak.<timestamp>`. To update a box, `git pull` in the clone; re-run only when modules or links change.
 
@@ -34,8 +35,10 @@ bash/bashrc.d/          one snippet per concern; delete a file to retire it
 bash/profile            login environment (PATH, EDITOR)
 git/gitconfig           shared behavior, aliases, default identity
 git/*.example           templates for ~/.gitconfig and per-client gitconfigs
+git/clients/            reusable credential recipes, e.g. aws-codecommit.gitconfig
 ssh/config.example      per-client ~/.ssh/config.d layout
 agents/AGENTS.md        becomes ~/AGENTS.md
+private.example/        starter layout for the private companion repo
 vim-config/             vimrc-full, vimrc-min, Neovim init.vim; its own install.sh
                         serves boxes that only want vim (e.g. ralph-loop sandboxes)
 desktop/                Linux desktop extras
@@ -53,41 +56,57 @@ This repo is public. Anything specific to one machine or client lives outside it
 
 ## Git for many clients
 
-Each client gets a directory under `~/src/` and one gitconfig beside its repos:
+Each client gets a directory under `~/src/`, and `~/.gitconfig` maps each directory to that client's settings with `includeIf`. Later settings win, so client settings override the shared defaults.
 
 ```
-~/.gitconfig                  [include] <repo>/git/gitconfig, then one includeIf per client
-~/src/acme/.gitconfig         identity, ssh key, credential helpers for acme
-~/src/acme/<repos>
+~/.gitconfig                        [include] <clone>/git/gitconfig, then one includeIf per client
+<clone>/git/clients/*.gitconfig     reusable recipes, e.g. AWS CodeCommit via the AWS CLI
+~/src/acme/.gitconfig               a client that needs its own identity or ssh key
 ```
 
 ```ini
 # ~/.gitconfig
+# a client that only needs a stock recipe
 [includeIf "gitdir:~/src/acme/"]
-    path = ~/src/acme/.gitconfig
+    path = ~/src/mrj/nix-profile/git/clients/aws-codecommit.gitconfig
+# a client with its own settings
+[includeIf "gitdir:~/src/globex/"]
+    path = ~/src/globex/.gitconfig
 # repos outside the client's directory: match the remote instead (git 2.36+)
-[includeIf "hasconfig:remote.*.url:git@github.com:acme-corp/**"]
-    path = ~/src/acme/.gitconfig
+[includeIf "hasconfig:remote.*.url:git@github.com:globex/**"]
+    path = ~/src/globex/.gitconfig
 ```
 
-In the client file ([git/client.gitconfig.example](git/client.gitconfig.example)):
+A client file ([git/client.gitconfig.example](git/client.gitconfig.example)) can set:
 
-- `user.email` sets the client identity.
-- `core.sshCommand = ssh -i ~/.ssh/acme_ed25519 -o IdentitiesOnly=yes` picks the client's ssh key by directory. Clone URLs stay exactly as the client gives them, with no `Host github-acme` aliases.
-- `url.<base>.insteadOf` forces ssh or https for that client's host.
-- `[credential "https://host"]` scopes helpers such as the AWS CodeCommit or `gh` helper to one host.
+- `user.email`, for the client identity.
+- `core.sshCommand = ssh -i ~/.ssh/globex_ed25519 -o IdentitiesOnly=yes`, which picks the client's ssh key by directory. Clone URLs stay exactly as the client gives them, with no `Host github-globex` aliases.
+- `url.<base>.insteadOf`, which forces ssh or https for that client's host.
+- `[credential "https://host"]`, which scopes a credential helper to one host.
 
-Check what applies in a repo with `git config --show-origin --show-scope --list`.
+Check what applies in a repo with `git config --list --show-origin --show-scope`.
 
 For ssh hosts that aren't git servers, keep one file per client in `~/.ssh/config.d/` and `Include config.d/*.conf` at the top of `~/.ssh/config` ([ssh/config.example](ssh/config.example)).
 
+## Private settings
+
+This repo is public, so it holds only what anyone could reuse. The rest splits by sensitivity:
+
+| Kind | Example | Lives in |
+|---|---|---|
+| Generic config | aliases, vimrc, credential recipes | this repo |
+| Private, not secret | client names, hosts, IPs, `includeIf` mappings, client aliases | a private companion repo |
+| Secret | ssh private keys, `~/.aws` credentials, API keys | a password manager, never a repo |
+
+The `private` module clones the companion repo (default `mjeffe/nix-profile-private`, next to this clone; override with `NIX_PROFILE_PRIVATE_REPO` and `NIX_PROFILE_PRIVATE_DIR`) and runs its `install.sh`. [private.example/](private.example) is a starter for it. Its installer includes the repo's `gitconfig` from `~/.gitconfig`, links `ssh/config.d/*.conf` and `bashrc.d/*.sh`, and is safe to re-run.
+
 ## Moving to a new machine
 
-The repo covers the shared setup. Carry these over privately, for example in an encrypted archive or a password manager:
+```sh
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/install.sh | bash
+gh auth login && gh auth setup-git      # HTTPS access to the private repo; no ssh key needed
+~/src/mrj/nix-profile/install.sh private
+ssh-keygen -t ed25519 && gh ssh-key add ~/.ssh/id_ed25519.pub
+```
 
-- `~/.bashrc.local`, `~/.bashrc.d/`
-- `~/.gitconfig` (client `includeIf` blocks) and `~/src/*/.gitconfig`
-- `~/.ssh/` (keys, `config`, `config.d/`)
-- `~/.aws/`
-
-Better still, generate fresh ssh keys on the new machine and register them with each client. Then retire the old laptop's keys.
+Then restore `~/.aws`, `~/.bashrc.local`, and any client keys from the password manager. Better still, generate fresh keys on the new machine, register them with each client, and retire the old laptop's keys.

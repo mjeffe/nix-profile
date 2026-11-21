@@ -1,0 +1,22 @@
+# Recipe: AWS CodeCommit over HTTPS, authenticated by the AWS CLI.
+#
+# Installed as: nothing. Stays in the clone; include it from ~/.gitconfig
+#   (or the private repo's gitconfig) for each client directory that uses it:
+#       [includeIf "gitdir:~/src/<client>/"]
+#           path = ~/src/mrj/nix-profile/git/clients/aws-codecommit.gitconfig
+#
+# Needs the AWS CLI with a working "default" profile in ~/.aws (restore that
+# from your password manager, or `aws configure` / `aws configure sso`).
+# For a different profile or region, copy this file to
+# ~/src/<client>/.gitconfig and edit it there.
+#
+# Git matches credential config by exact host, so the standard and FIPS
+# endpoints each need a block. Scoping by host keeps the helper away from
+# every other HTTPS remote.
+
+[credential "https://git-codecommit.us-east-1.amazonaws.com"]
+	helper = !aws codecommit --profile default --region us-east-1 credential-helper $@
+	usehttppath = true
+[credential "https://git-codecommit-fips.us-east-1.amazonaws.com"]
+	helper = !aws codecommit --profile default --region us-east-1 credential-helper $@
+	usehttppath = true

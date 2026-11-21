@@ -1,0 +1,15 @@
+# Private client mappings: which ~/src/<client>/ directory uses which identity,
+# ssh key, and credential helpers.
+#
+# Installed as: nothing. Stays in the private clone; its install.sh adds
+#   [include] path = <private clone>/gitconfig
+# to ~/.gitconfig.
+
+# A client that only needs a stock recipe from the public repo:
+#[includeIf "gitdir:~/src/acme/"]
+#	path = ~/src/mrj/nix-profile/git/clients/aws-codecommit.gitconfig
+
+# A client with its own settings (see the public git/client.gitconfig.example);
+# keep the file in this repo, next to this one:
+#[includeIf "gitdir:~/src/globex/"]
+#	path = clients/globex.gitconfig
