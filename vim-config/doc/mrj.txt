@@ -39,9 +39,13 @@ Set up a bash alias to invoke VIM in IDE mode:
 
     alias vide='VIM_IDE=1 vim'
 
+Neovim uses the same config: install init.vim as ~/.config/nvim/init.vim,
+then run `VIM_IDE=1 nvim`.
+
 Cheat sheet when running as IDE:
 
-    Ctrl-n   open/close NERDTree (see key binding below)
+    Ctrl-n   open/close NERDTree in all tabs (also \t)
+    F6       toggle line numbers and NERDTree, for copying multiline text
     Ctrl-ww  cycle the cursor between windows (NERDTree view on left and open editor)
     <Enter>  open file - replace editor window with new file
     t        open file in new tab - as active window

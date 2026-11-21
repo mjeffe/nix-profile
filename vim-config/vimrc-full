@@ -6,6 +6,8 @@
 "   alias vide='VIM_IDE=1 vim'
 "
 " Then invoke `vim` for normal use, or `vide` for IDE mode with plugins.
+" Works in Neovim too: install init.vim as ~/.config/nvim/init.vim, and
+" `VIM_IDE=1 nvim` uses the same plugins.
 "
 " Setup on a new system:
 "   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -13,6 +15,8 @@
 "   mkdir -p ~/.vim/{swap,backup}
 "   cp .vim/colors/mrj.vim ~/.vim/colors/
 "   vide +PlugInstall +qall
+"
+" See :help mrj for notes on this setup.
 " --------------------------------------------------------------------------------
 
 set nocompatible
@@ -24,8 +28,7 @@ if $VIM_IDE == '1'
     call plug#begin('~/.vim/plugged')
 
     " file tree browser
-    Plug 'scrooloose/nerdtree'
-    Plug 'jistr/vim-nerdtree-tabs'
+    Plug 'preservim/nerdtree'
 
     " language error checking
     Plug 'vim-syntastic/syntastic'
@@ -41,7 +44,11 @@ if $VIM_IDE == '1'
     Plug 'leafOfTree/vim-vue-plugin'
 
     " AWS CloudFormation syntax checking and highlighting
+    " https://github.com/aws-cloudformation/cfn-lint
     Plug 'speshak/vim-cfn'
+
+    " Rainbow CSV - aids working with csv files
+    Plug 'mechatroner/rainbow_csv'
 
     call plug#end()
     filetype plugin indent on
@@ -49,10 +56,46 @@ if $VIM_IDE == '1'
 
     " --- Plugin-specific settings ---------------------------------------------
 
-    " ----- NERDTree / nerdtree-tabs -----
-    nmap <C-n> :NERDTreeTabsToggle<CR>
-    let g:nerdtree_tabs_open_on_console_startup = 0
+    " ----- NERDTree -----
+    " One tree shared by every tab and toggled in all tabs together, the way
+    " the abandoned vim-nerdtree-tabs plugin worked.
     let NERDTreeShowBookmarks = 1
+    let g:mrj_nerdtree_on = 0
+
+    function! s:NERDTreeShow() abort
+        if g:NERDTree.IsOpen()
+            return
+        endif
+        silent! NERDTreeMirror
+        if !g:NERDTree.IsOpen()
+            NERDTree
+        endif
+        wincmd p
+    endfunction
+
+    function! s:NERDTreeToggleAllTabs() abort
+        let g:mrj_nerdtree_on = !g:NERDTree.IsOpen()
+        let l:tab = tabpagenr()
+        if g:mrj_nerdtree_on
+            tabdo call s:NERDTreeShow()
+        else
+            tabdo NERDTreeClose
+        endif
+        execute l:tab . 'tabnext'
+    endfunction
+
+    augroup mrjNERDTree
+        au!
+        " new tabs get the tree while it is on
+        au TabNew * if g:mrj_nerdtree_on | call timer_start(0, {-> s:NERDTreeShow()}) | endif
+        " close a tab, or vim, when the tree is the last window left
+        " (feedkeys: newer vim refuses to close windows from inside an autocmd)
+        au BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree()
+                    \ | call feedkeys(":quit\<CR>:\<BS>") | endif
+    augroup END
+
+    nnoremap <silent> <C-n> :call <SID>NERDTreeToggleAllTabs()<CR>
+    nnoremap <silent> <leader>t :call <SID>NERDTreeToggleAllTabs()<CR>
 
     " ----- syntastic -----
     let g:syntastic_error_symbol = '✘'
@@ -76,16 +119,18 @@ if $VIM_IDE == '1'
     let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
 
     " ----- ctrlp -----
+    " To clear the ctrlp cache, invoke CtrlP, then hit <F5>
     let g:ctrlp_match_window = 'order:ttb,min:1,max:30,results:30'
-    let g:ctrlp_working_path_mode = 'ra'
-    let g:ctrlp_by_filename = 1
-    let g:ctrlp_regexp = 1
+    let g:ctrlp_working_path_mode = 'ra'    " 'ra' - search from project root, 'c' from current dir
+    let g:ctrlp_by_filename = 1             " search by filename = 1, by full path = 0
+    let g:ctrlp_regexp = 1                  " regexp search by default; toggle with <c-r> in the prompt
     let g:ctrlp_custom_ignore = {
       \ 'dir':  '\.git$\|\.svn$\|node_modules$\|vendor$\|log$\|tmp$',
       \ 'file': '\.exe$\|\.so$\|\.dat$\|\.jpg$\|\.jpeg$\|\.png\|\.pdf$'
       \ }
 
     " ----- gutentags -----
+    " big help from: https://www.reddit.com/r/vim/comments/d77t6j/guide_how_to_setup_ctags_with_gutentags_properly/
     let g:gutentags_generate_on_new = 1
     let g:gutentags_generate_on_missing = 1
     let g:gutentags_generate_on_write = 1
@@ -100,6 +145,7 @@ if $VIM_IDE == '1'
         \ 'tmp/*', 'log/*', 'coverage/*',
         \ '*.git', '*.svg', '*.hg',
         \ 'build', 'dist', 'bin',
+        \ '*sites/*/files/*',
         \ 'node_modules', 'bower_components',
         \ 'cache', 'compiled', 'bundle', 'vendor',
         \ 'docs', 'doc/*', 'example',
@@ -121,10 +167,13 @@ if $VIM_IDE == '1'
 
     " --- IDE-only general settings ---
     set number
+
+    " mouse: on Linux (and Mac with iTerm2) mouse=a works; hold SHIFT for the
+    " terminal's own copy/paste. In Mac Terminal try mouse=r instead.
     set mouse=a
 
     " F6 to toggle line numbers + NERDTree (for copy/paste of multiline text)
-    map <F6> :set nonumber!<CR>:NERDTreeTabsToggle<CR>
+    nnoremap <silent> <F6> :set number!<CR>:call <SID>NERDTreeToggleAllTabs()<CR>
 endif
 
 " --- General settings ---------------------------------------------------------
@@ -135,33 +184,42 @@ set ruler
 set showcmd
 set showmode
 set incsearch
-set encoding=utf-8
 
 " display tabs and trailing spaces
 set list
 set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 
-" put swap/backup files under ~/.vim
-set backupdir=~/.vim/backup//
-set directory=~/.vim/swap//
-
 " indentation
 set shiftwidth=4
 set tabstop=4
 set expandtab
-set pastetoggle=<F12>
+
+if has('nvim')
+    " mrj.vim defines terminal colors only; don't let Neovim switch to GUI colors
+    set notermguicolors
+else
+    " Neovim has these as defaults or no longer supports them
+    set encoding=utf-8
+    set pastetoggle=<F12>
+    if exists('+cryptmethod')
+        set cryptmethod=blowfish2       " for files encrypted with :X
+    endif
+    silent! packadd! matchit            " allow % to match html/xml tags
+    " put swap/backup files under ~/.vim (Neovim keeps its own under ~/.local/state/nvim)
+    set backupdir=~/.vim/backup//
+    set directory=~/.vim/swap//
+endif
 
 " syntax and colors
 colorscheme mrj
 syntax on
 hi clear SignColumn
 let g:loaded_matchparen=1
-runtime macros/matchit.vim
 if isdirectory(expand('~/.vim/doc'))
     helptags ~/.vim/doc
 endif
 
-" folding
+" folding (see :help mrj)
 set foldmethod=syntax
 set foldnestmax=20
 set foldlevel=1
@@ -170,10 +228,11 @@ set foldlevelstart=99
 " jump to last position when reopening a file
 au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'\"" | endif
 
-" grep word under cursor with F4
-map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-from=$HOME/.vim/exclude.list . -e " . expand("<cword>") . " " <bar> cwindow<CR>
+" grep word under cursor with F4, navigate results with :cn (next) and :cp (prev)
+map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=dist --exclude-dir=build --exclude='*.min.*' --exclude='*.map' --exclude='*.swp' --exclude='*~' . -e " . expand("<cword>") . " " <bar> cwindow<CR>
 
-" commands for soft wrapping
+" commands for soft wrapping long lines: :Wrap and :NoWrap
+" source: http://vimcasts.org/episodes/soft-wrapping-text/
 command! -nargs=* Wrap set wrap linebreak nolist showbreak=…
 command! -nargs=* NoWrap set nowrap nolinebreak
 
@@ -183,7 +242,14 @@ let g:pymode_python = 'python3'
 " php folding
 let g:php_folding=2
 
+" insert sequence number column: select lines with V, then
+"   :let i=1 | '<,'>g/^/ s//\=i . " "/ | let i+=1
+
 " --- FileType-specific settings -----------------------------------------------
+" Also see files in ~/.vim/after/ftplugin/
+
+" custom filetype detection
+au BufNewFile,BufRead *.edi,*.x12 setf x12
 
 au! FileType c,sql set formatoptions+=ro
 au FileType make set noexpandtab shiftwidth=8 tabstop=8
@@ -209,7 +275,9 @@ nnoremap <silent> - :call ToggleAccent()<CR>
 " --- Spell checking -----------------------------------------------------------
 
 set spelllang=en_us
-set spellfile=$HOME/Dropbox/vim/spell/en.utf-8.add
+if isdirectory(expand('~/Dropbox/vim/spell'))
+    set spellfile=~/Dropbox/vim/spell/en.utf-8.add
+endif
 autocmd filetype svn,*commit* setlocal spell
 autocmd filetype git,*commit* setlocal spell
 

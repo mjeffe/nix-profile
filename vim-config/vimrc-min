@@ -6,6 +6,8 @@
 "   alias vide='VIM_IDE=1 vim'
 "
 " Then invoke `vim` for normal use, or `vide` for IDE mode with plugins.
+" Works in Neovim too: install init.vim as ~/.config/nvim/init.vim, and
+" `VIM_IDE=1 nvim` uses the same plugins.
 "
 " Setup on a new system:
 "   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -24,8 +26,7 @@ if $VIM_IDE == '1'
     call plug#begin('~/.vim/plugged')
 
     " file tree browser
-    Plug 'scrooloose/nerdtree'
-    Plug 'jistr/vim-nerdtree-tabs'
+    Plug 'preservim/nerdtree'
 
     " language error checking
     Plug 'vim-syntastic/syntastic'
@@ -42,10 +43,46 @@ if $VIM_IDE == '1'
 
     " --- Plugin-specific settings ---------------------------------------------
 
-    " ----- NERDTree / nerdtree-tabs -----
-    nmap <C-n> :NERDTreeTabsToggle<CR>
-    let g:nerdtree_tabs_open_on_console_startup = 0
+    " ----- NERDTree -----
+    " One tree shared by every tab and toggled in all tabs together, the way
+    " the abandoned vim-nerdtree-tabs plugin worked.
     let NERDTreeShowBookmarks = 1
+    let g:mrj_nerdtree_on = 0
+
+    function! s:NERDTreeShow() abort
+        if g:NERDTree.IsOpen()
+            return
+        endif
+        silent! NERDTreeMirror
+        if !g:NERDTree.IsOpen()
+            NERDTree
+        endif
+        wincmd p
+    endfunction
+
+    function! s:NERDTreeToggleAllTabs() abort
+        let g:mrj_nerdtree_on = !g:NERDTree.IsOpen()
+        let l:tab = tabpagenr()
+        if g:mrj_nerdtree_on
+            tabdo call s:NERDTreeShow()
+        else
+            tabdo NERDTreeClose
+        endif
+        execute l:tab . 'tabnext'
+    endfunction
+
+    augroup mrjNERDTree
+        au!
+        " new tabs get the tree while it is on
+        au TabNew * if g:mrj_nerdtree_on | call timer_start(0, {-> s:NERDTreeShow()}) | endif
+        " close a tab, or vim, when the tree is the last window left
+        " (feedkeys: newer vim refuses to close windows from inside an autocmd)
+        au BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree()
+                    \ | call feedkeys(":quit\<CR>:\<BS>") | endif
+    augroup END
+
+    nnoremap <silent> <C-n> :call <SID>NERDTreeToggleAllTabs()<CR>
+    nnoremap <silent> <leader>t :call <SID>NERDTreeToggleAllTabs()<CR>
 
     " ----- syntastic -----
     let g:syntastic_error_symbol = '✘'
@@ -83,7 +120,7 @@ if $VIM_IDE == '1'
     set mouse=a
 
     " F6 to toggle line numbers + NERDTree (for copy/paste of multiline text)
-    map <F6> :set nonumber!<CR>:NERDTreeTabsToggle<CR>
+    nnoremap <silent> <F6> :set number!<CR>:call <SID>NERDTreeToggleAllTabs()<CR>
 endif
 
 " --- General settings ---------------------------------------------------------
@@ -94,29 +131,39 @@ set ruler
 set showcmd
 set showmode
 set incsearch
-set encoding=utf-8
 
 " display tabs and trailing spaces
 set list
 set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 
-" put swap/backup files under ~/.vim
-set backupdir=~/.vim/backup//
-set directory=~/.vim/swap//
-
 " indentation
 set shiftwidth=4
 set tabstop=4
 set expandtab
-set pastetoggle=<F12>
+
+if has('nvim')
+    " mrj.vim defines terminal colors only; don't let Neovim switch to GUI colors
+    set notermguicolors
+else
+    " Neovim has these as defaults or no longer supports them
+    set encoding=utf-8
+    set pastetoggle=<F12>
+    if exists('+cryptmethod')
+        set cryptmethod=blowfish2       " for files encrypted with :X
+    endif
+    silent! packadd! matchit            " allow % to match html/xml tags
+    " put swap/backup files under ~/.vim (Neovim keeps its own under ~/.local/state/nvim)
+    set backupdir=~/.vim/backup//
+    set directory=~/.vim/swap//
+endif
 
 " syntax and colors
 colorscheme mrj
 syntax on
 hi clear SignColumn
 let g:loaded_matchparen=1
-if filereadable($VIMRUNTIME . '/macros/matchit.vim')
-    runtime macros/matchit.vim
+if isdirectory(expand('~/.vim/doc'))
+    helptags ~/.vim/doc
 endif
 
 " folding
