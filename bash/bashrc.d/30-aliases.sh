@@ -5,7 +5,7 @@ alias ll="ls -lF --group-directories-first"   # linux or linuxified mac
 command -v less >/dev/null && alias more=less
 alias vi=vim
 alias view="vim -R"
-alias vide='vim -u ~/.vimrc-ide'
+alias vide='VIM_IDE=1 vim'    # vim with IDE plugins (see :help mrj)
 alias gitsdiff='git difftool -y -x "sdiff -w $(tput cols)"'
 alias fucking='sudo'
 alias hulksmash='rm -fr'

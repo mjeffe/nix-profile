@@ -18,7 +18,7 @@ To pick modules, pass them after `-s --`, or run `./install.sh [module...|all]` 
 |---|---|
 | `bash` (default) | `~/.bashrc-mrj` and `~/.profile-mrj` loaders, hooked into the distro's `~/.bashrc` and `~/.profile` |
 | `git` (default) | an `[include]` of `git/gitconfig` at the top of `~/.gitconfig`, plus `~/.gitignore_global` |
-| `vim` (default) | `~/.vimrc`, `~/.vimrc-ide`, `~/.vim/*`, and Vundle plugins |
+| `vim` (default) | [vim-config](vim-config): `~/.vimrc`, colors, `:help mrj`, vim-plug plugins, and Neovim's `init.vim` when Neovim is installed |
 | `agents` (default) | `~/AGENTS.md`, baseline guidance for coding agents |
 | `pi` | the pi coding agent and subagents ([coding-agents/pi](coding-agents/pi/README.md)) |
 | `desktop` | X resources and conky |
@@ -36,8 +36,8 @@ git/gitconfig           shared behavior, aliases, default identity
 git/*.example           templates for ~/.gitconfig and per-client gitconfigs
 ssh/config.example      per-client ~/.ssh/config.d layout
 agents/AGENTS.md        becomes ~/AGENTS.md
-vimrc, vimrc-ide, vim/  current vim setup (Vundle)
-vim-config/             newer vim-plug setup, used by ralph-loop sandboxes
+vim-config/             vimrc-full, vimrc-min, Neovim init.vim; its own install.sh
+                        serves boxes that only want vim (e.g. ralph-loop sandboxes)
 desktop/                Linux desktop extras
 ```
 

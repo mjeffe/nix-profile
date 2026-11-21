@@ -13,7 +13,7 @@
 "   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 "     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 "   mkdir -p ~/.vim/{swap,backup}
-"   cp .vim/colors/mrj.vim ~/.vim/colors/
+"   cp mrj.vim ~/.vim/colors/
 "   vide +PlugInstall +qall
 "
 " See :help mrj for notes on this setup.
@@ -214,6 +214,8 @@ endif
 colorscheme mrj
 syntax on
 hi clear SignColumn
+" plain shell variables; the sh syntax file links them to PreProc after the colorscheme loads
+au Syntax sh hi link shShellVariables NONE
 let g:loaded_matchparen=1
 if isdirectory(expand('~/.vim/doc'))
     helptags ~/.vim/doc

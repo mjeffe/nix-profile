@@ -38,7 +38,8 @@
 	colorMoved = zebra
 	tool = mycustomdiff
 [difftool "mycustomdiff"]
-	cmd = ~/.vim/side-by-side-diff.sh \"$LOCAL\" \"$REMOTE\" | less
+	# side-by-side diff; or use a built-in tool, e.g. git difftool -t vimdiff
+	cmd = sdiff -w200 \"$LOCAL\" \"$REMOTE\" | less
 [difftool]
 	prompt = false
 

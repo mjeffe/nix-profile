@@ -60,6 +60,13 @@ echo "Installing help docs..."
 mkdir -p "$HOME/.vim/doc"
 curl -fsSL "$BASE_URL/doc/mrj.txt" -o "$HOME/.vim/doc/mrj.txt"
 
+# neovim: share the same config and plugins
+if command -v nvim >/dev/null; then
+    echo "Installing ~/.config/nvim/init.vim..."
+    mkdir -p "$HOME/.config/nvim"
+    curl -fsSL "$BASE_URL/init.vim" -o "$HOME/.config/nvim/init.vim"
+fi
+
 # install plugins
 echo "Installing vim plugins..."
 VIM_IDE=1 vim -es -u ~/.vimrc +PlugInstall +qall

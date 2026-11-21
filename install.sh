@@ -32,7 +32,7 @@ usage: install.sh [module...|all]
 modules (default: ${DEFAULT_MODULES[*]}):
   bash     ~/.bashrc-mrj, ~/.profile-mrj loaders and the bashrc.d/ snippets
   git      ~/.gitconfig include, ~/.gitignore_global
-  vim      vimrc, ~/.vim files, Vundle plugins
+  vim      vim-config: ~/.vimrc, colors, help, vim-plug plugins (and Neovim's init.vim)
   agents   ~/AGENTS.md
   pi       pi coding agent with subagents (coding-agents/pi)
   desktop  X resources, conky (Linux desktops)
@@ -51,7 +51,9 @@ link() {
         return 0
     fi
     mkdir -p "$(dirname "$dest")"
-    if [ -e "$dest" ] || [ -L "$dest" ]; then
+    if [ -L "$dest" ] && [[ $(readlink "$dest") == "$DIR"/* ]]; then
+        rm "$dest"    # an older link into this repo; nothing to back up
+    elif [ -e "$dest" ] || [ -L "$dest" ]; then
         mv "$dest" "$dest.bak.$STAMP"
         echo "    moved $dest to $dest.bak.$STAMP"
     fi
@@ -132,31 +134,38 @@ install_git() {
 
 install_vim() {
     say "vim"
-    if ! command -v vim >/dev/null; then
-        warn "vim not installed, skipping"
+    local editor
+    editor=$(command -v vim || command -v nvim || true)
+    if [ -z "$editor" ]; then
+        warn "neither vim nor neovim installed, skipping"
         return 0
     fi
-    link "$DIR/vimrc" "$HOME/.vimrc"
-    link "$DIR/vimrc-ide" "$HOME/.vimrc-ide"
-    link "$DIR/vimrc-largefile" "$HOME/.vimrc-largefile"
-    local d
-    for d in after colors doc syntax side-by-side-diff.sh; do
-        link "$DIR/vim/$d" "$HOME/.vim/$d"
+    local src=$DIR/vim-config
+    link "$src/vimrc-full" "$HOME/.vimrc"
+    link "$src/vimrc-largefile" "$HOME/.vimrc-largefile"
+    # remove links left by the Vundle-era installer (~/.vimrc-ide, ~/.vim/colors, ...)
+    local old
+    for old in "$HOME/.vimrc-ide" "$HOME"/.vim/{after,colors,doc,syntax,side-by-side-diff.sh}; do
+        if [ -L "$old" ] && [[ $(readlink "$old") == "$DIR"/* ]]; then
+            rm "$old"
+            echo "    removed old link $old"
+        fi
     done
-    mkdir -p "$HOME/.vim/swap" "$HOME/.vim/backup" "$HOME/.vim/bundle"
-    if ! command -v git >/dev/null; then
-        warn "git not installed, skipping vim plugins"
-        return 0
+    link "$src/mrj.vim" "$HOME/.vim/colors/mrj.vim"
+    link "$src/doc/mrj.txt" "$HOME/.vim/doc/mrj.txt"
+    mkdir -p "$HOME/.vim/swap" "$HOME/.vim/backup"
+    if command -v nvim >/dev/null; then
+        link "$src/init.vim" "$HOME/.config/nvim/init.vim"
     fi
-    if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
-        git clone --quiet https://github.com/VundleVim/Vundle.vim.git "$HOME/.vim/bundle/Vundle.vim"
+    if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
+        curl -fsSLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     fi
+    local rc=$HOME/.vimrc
+    [[ $editor == */nvim ]] && rc=$HOME/.config/nvim/init.vim
     echo "    installing vim plugins"
-    vim -es -u "$HOME/.vimrc-ide" -i NONE +PluginInstall +qall </dev/null || warn "PluginInstall reported errors"
-    # upstream vim-nerdtree-tabs is abandoned and broken on current vim; use the patched copy
-    cp "$DIR/vim/bundle/vim-nerdtree-tabs/nerdtree_plugin/vim-nerdtree-tabs.vim" \
-        "$HOME/.vim/bundle/vim-nerdtree-tabs/nerdtree_plugin/" 2>/dev/null ||
-        warn "could not install the patched vim-nerdtree-tabs"
+    VIM_IDE=1 "$editor" -es -u "$rc" -i NONE +PlugInstall +qall </dev/null ||
+        warn "PlugInstall reported errors"
 }
 
 install_agents() {
