@@ -42,8 +42,19 @@ modules (default: ${DEFAULT_MODULES[*]}):
   desktop  X resources, conky (Linux desktops)
   private  clone a private companion repo and run its install.sh
            (see private.example/; log in first with: gh auth login && gh auth setup-git)
+
+environment:
+  NIX_PROFILE_DIR           where to clone (default: ~/src/mrj/nix-profile)
+  NIX_PROFILE_REPO          repo to clone (default: https://github.com/mjeffe/nix-profile.git)
+  NIX_PROFILE_REF           branch (default: master)
+  NIX_PROFILE_PRIVATE_REPO  private companion repo (default: https://github.com/mjeffe/nix-profile-private.git)
+  NIX_PROFILE_PRIVATE_DIR   where to clone it (default: next to the clone)
 EOF
 }
+
+case "${1:-}" in
+    -h | --help) usage; exit 0 ;;
+esac
 
 say() { printf '==> %s\n' "$*"; }
 warn() { printf '  ! %s\n' "$*" >&2; }
@@ -217,9 +228,6 @@ modules=("$@")
 [ "${modules[0]}" = all ] && modules=("${ALL_MODULES[@]}")
 
 for m in "${modules[@]}"; do
-    case $m in
-        -h | --help) usage; exit 0 ;;
-    esac
     case " ${MODULES[*]} " in
         *" $m "*) ;;
         *) usage >&2; echo "unknown module: $m" >&2; exit 1 ;;

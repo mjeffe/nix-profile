@@ -2,29 +2,86 @@
 
 My bash, vim, and git setup for new Unix/Linux/macOS boxes. "nix" as in *nix, not the Nix package manager.
 
-These are my preferences; feel free to borrow the techniques. Fork it and change `NIX_PROFILE_REPO`, the identity in `git/gitconfig`, and the `pushInsteadOf` URL.
+These are my preferences; feel free to borrow the techniques, or [fork it](#forking).
 
 ## Install
+
+### Requirements
+
+- `bash` and `curl`
+- `git`, recommended: without it the installer downloads a tarball, which you can't update with `git pull`, and vim plugins can't install
+- `vim` or Neovim for the `vim` module
+
+Tested on Ubuntu. macOS should work but hasn't been tested since the restructure.
+
+### Quick install
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/install.sh | bash
 ```
 
-This clones the repo to `~/src/mrj/nix-profile` over HTTPS and symlinks the default modules into `$HOME`. You need no ssh key or git setup first. `git/gitconfig` makes later pushes to my GitHub repos go over ssh. Without git, it downloads a tarball.
+This clones the repo to `~/src/mrj/nix-profile` over HTTPS, so no ssh key or git setup is needed first, and installs the default modules: `bash`, `git`, `vim`, and `agents`. Then open a new shell.
 
-To pick modules, pass them after `-s --`, or run `./install.sh [module...|all]` from a clone:
+### Choosing modules
+
+Name modules after `-s --`, or use `all` for every module except `private`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/install.sh | bash -s -- bash git
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/install.sh | bash -s -- all
+```
 
 | Module | Installs |
 |---|---|
-| `bash` (default) | `~/.bashrc-mrj` and `~/.profile-mrj` loaders, hooked into the distro's `~/.bashrc` and `~/.profile` |
-| `git` (default) | an `[include]` of `git/gitconfig` at the top of `~/.gitconfig`, plus `~/.gitignore_global` |
+| `bash` (default) | `~/.bashrc-mrj` and `~/.profile-mrj` loaders, hooked into the distro's `~/.bashrc` and `~/.profile`; creates `~/.bashrc.local` (mode 600) |
+| `git` (default) | an `[include]` of `git/gitconfig` at the top of `~/.gitconfig` (created if missing), plus `~/.gitignore_global` |
 | `vim` (default) | [vim-config](vim-config): `~/.vimrc`, colors, `:help mrj`, vim-plug plugins, and Neovim's `init.vim` when Neovim is installed |
 | `agents` (default) | `~/AGENTS.md`, baseline guidance for coding agents |
 | `pi` | the pi coding agent and subagents ([coding-agents/pi](coding-agents/pi/README.md)) |
 | `desktop` | X resources and conky |
 | `private` | clones a private companion repo and runs its `install.sh` (see [Private settings](#private-settings)); never part of `all` |
 
-Re-running is safe. Any file it replaces is moved to `<file>.bak.<timestamp>`. To update a box, `git pull` in the clone; re-run only when modules or links change.
+### From a clone, or somewhere else
+
+```sh
+git clone https://github.com/mjeffe/nix-profile.git ~/src/mrj/nix-profile
+~/src/mrj/nix-profile/install.sh [module...]
+```
+
+Run from a clone, the installer uses that clone wherever it is and never pulls. To have the curl install clone somewhere else, set `NIX_PROFILE_DIR`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/install.sh | NIX_PROFILE_DIR=~/dotfiles bash
+```
+
+`./install.sh --help` lists the modules and the environment variables.
+
+### After installing
+
+- Open a new shell, or run `. ~/.bashrc`.
+- Put API keys and machine-specific settings in `~/.bashrc.local`, and client git mappings in `~/.gitconfig` or the private repo (see [Git for many clients](#git-for-many-clients)).
+- On boxes where you'll commit to this repo, add an ssh key to GitHub. Clones use HTTPS, and `git/gitconfig` sends pushes to `github.com/mjeffe/` over ssh.
+
+### Updating
+
+Files are symlinked into the clone, so `git -C ~/src/mrj/nix-profile pull` updates every installed module. Re-run `install.sh` only when modules or links change. Re-running is always safe: it changes nothing that is already in place.
+
+### Vim only
+
+For containers and servers that only need vim (as ralph-loop sandboxes do), `vim-config/install.sh` downloads the files without cloning anything:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/vim-config/install.sh | bash          # full
+curl -fsSL https://raw.githubusercontent.com/mjeffe/nix-profile/master/vim-config/install.sh | bash -s min   # minimal
+```
+
+### Undoing
+
+The installer moves any file it replaces to `<file>.bak.<timestamp>` beside it. To back out a module, delete its symlinks (`find ~ -maxdepth 3 -lname '*nix-profile*'` lists them) and restore the `.bak` files. Then delete the `# nix-profile` lines from `~/.bashrc` and `~/.profile`, and the `[include]` block at the top of `~/.gitconfig`.
+
+### Forking
+
+Change `NIX_PROFILE_REPO` and the default `NIX_PROFILE_DIR` in `install.sh`, the identity and `pushInsteadOf` URL in `git/gitconfig`, `git/gitconfig-mrj`, and the URLs in this README.
 
 ## Layout
 
